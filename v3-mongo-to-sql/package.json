@@ -1,0 +1,13 @@
+{
+  "name": "v3-mongo-to-sql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "knex": "0.95.15",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.4.1",
+    "sqlite3": "^5.0.2"
+  }
+}
