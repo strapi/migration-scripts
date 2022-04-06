@@ -151,7 +151,7 @@ async function run() {
                 order: idx + 1,
                 component_type: componentModel.collectionName,
                 component_id: idMap.get(mongoLink.ref),
-                [`${model.collectionName}_id`]: idMap.get(entry._id),
+                [`${singular(model.collectionName)}_id`]: idMap.get(entry._id),
               };
             });
 
@@ -177,7 +177,7 @@ async function run() {
                 order: idx + 1,
                 component_type: componentModel.collectionName,
                 component_id: idMap.get(mongoLink.ref),
-                [`${model.collectionName}_id`]: idMap.get(entry._id),
+                [`${singular(model.collectionName)}_id`]: idMap.get(entry._id),
               };
             });
 
@@ -267,6 +267,11 @@ async function run() {
 
             if (isOneWay || isOneToOne || isManyToOne) {
               // TODO: optimize with one updata at the end
+
+              if (!entry[key]) {
+                continue;
+              }
+
               await knex(model.collectionName)
                 .update({
                   [key]: idMap.get(entry[key]),
