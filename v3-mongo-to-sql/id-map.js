@@ -10,7 +10,7 @@ class CollectionIdMap extends Map {
 
   next(mongoId) {
     const id = this.nextId();
-    this.set(mongoId, id);
+    this.set(mongoId.toString(), id);
     return id;
   }
 }
@@ -30,9 +30,13 @@ const idMap = {
     // get collectionId
     const id = this.collection(collectionName).next(mongoId);
     // set global Id map for relation matching
-    this._globalMap.set(mongoId, id);
+    this._globalMap.set(mongoId.toString(), id);
 
     return id;
+  },
+
+  get(mongoId) {
+    return this._globalMap.get(mongoId.toString());
   },
 };
 
