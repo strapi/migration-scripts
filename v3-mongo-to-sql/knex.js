@@ -1,9 +1,9 @@
 const knex = require("knex");
 
 const connection = knex({
-  client: "sqlite3",
+  client: process.env.SQL_CLIENT,
   connection: {
-    filename: "./data.db",
+    filename: process.env.SQL_FILENAME,
   },
   useNullAsDefault: true,
 });
