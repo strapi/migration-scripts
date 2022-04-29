@@ -21,13 +21,11 @@ yarn
 
 ## Configuration
 
+WIP
 
 ## Migration
 
-1. Start by following this guide https://www.notion.so/strapi/Mongo-to-SQL-migration-2c47f80114bb48b298edd386a47138c1 and migrate the app and generate the new DB
-2. Configure the DB connections by copying `.env.example` to `.env` and updating the vars
-3. Run the script
-
-```sh
-node index.js
-```
+1. Start by following the ["prepare the migration locally"](https://docs.strapi.io/developer-docs/latest/update-migration-guides/migration-guides/v4/data/mongo.html#prepare-the-migration-locally) guide on our documentation to do any needed code changes
+2. Run your SQL Strapi v3 in `develop` mode with an empty DB to generate the DB structure
+3. Turn off / kill the running Strapi v4 server
+4. Run migration script using `yarn start`
