@@ -34,12 +34,12 @@ if (process.env.DATABASE_CLIENT === "pg") {
   additionalConfigV4 = {
     useNullAsDefault: true,
     connection: {
-      host: process.env.DATABASE_V3_HOST,
-      port: process.env.DATABASE_V3_PORT,
-      user: process.env.DATABASE_V3_USER,
-      password: process.env.DATABASE_V3_PASSWORD,
-      database: process.env.DATABASE_V3_DATABASE,
-      schema: process.env.DATABASE_V3_SCHEMA
+      host: process.env.DATABASE_V4_HOST,
+      port: process.env.DATABASE_V4_PORT,
+      user: process.env.DATABASE_V4_USER,
+      password: process.env.DATABASE_V4_PASSWORD,
+      database: process.env.DATABASE_V4_DATABASE,
+      schema: process.env.DATABASE_V4_SCHEMA
     },
   };
 }
@@ -58,11 +58,11 @@ if (process.env.DATABASE_CLIENT === "mysql") {
   additionalConfigV4 = {
     useNullAsDefault: true,
     connection: {
-      host: process.env.DATABASE_V3_HOST,
-      port: process.env.DATABASE_V3_PORT,
-      user: process.env.DATABASE_V3_USER,
-      password: process.env.DATABASE_V3_PASSWORD,
-      database: process.env.DATABASE_V3_DATABASE
+      host: process.env.DATABASE_V4_HOST,
+      port: process.env.DATABASE_V4_PORT,
+      user: process.env.DATABASE_V4_USER,
+      password: process.env.DATABASE_V4_PASSWORD,
+      database: process.env.DATABASE_V4_DATABASE
     },
   };
 }
