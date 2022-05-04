@@ -10,6 +10,7 @@
 
 - Nodejs v14/v16
 - Yarn
+  - we recommend v3.2.0
 
 ### Installation
 
