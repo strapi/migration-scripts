@@ -144,4 +144,8 @@ dist
 # Database files
 data.db
 
+# JetBrains
+
+.idea
+
 # End of https://www.toptal.com/developers/gitignore/api/node
