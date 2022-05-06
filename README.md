@@ -26,3 +26,9 @@ Some scripts may be in various states, *you should pay careful attention to what
 
 - [Migration from v3 MongoDB to v3 SQL](./v3-mongodb-v3-sql/README.md) - **Currently in Alpha Testing**
 - [Migration from v3 SQL to v4 SQL](./v3-sql-v4-sql/README.md) - **Currently in Beta Testing**
+
+## Callouts
+
+Huge thank you to the following people, teams, or companies that helped build the content of this repo:
+
+- [Notum Technologies](https://notum.cz/en/) for their incredible help building the v3 to v4 SQL data migration script
