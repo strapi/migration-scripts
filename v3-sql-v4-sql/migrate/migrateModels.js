@@ -179,17 +179,24 @@ async function migrateModels(tables) {
       }
     }
     await migrate(modelDef.collectionName, modelDef.collectionName, (item) => {
-      const [createdAt, updatedAt] = modelDef.options.timestamps;
+      
+      if (modelDef.options.timestamps === false) {
+        return migrateItem(item);
+      }
+      else {
+        const timestamps = modelDef.options.timestamps === true ? ["created_at", "updated_at"] : modelDef.options.timestamps;
+        const [createdAt, updatedAt] = timestamps;
 
-      const newItem = {
-        ...item,
-        created_at: item[createdAt],
-        updated_at: item[updatedAt],
-      };
+        const newItem = {
+          ...item,
+          created_at: item[createdAt],
+          updated_at: item[updatedAt],
+        };
 
-      return migrateItem(
-        omit(newItem, [...omitAttributes, createdAt, updatedAt])
-      );
+        return migrateItem(
+          omit(newItem, [...omitAttributes, createdAt, updatedAt])
+        );
+      }
     });
   }
 
