@@ -15,7 +15,6 @@ const { migrateWebhooks } = require("./migrateWebhooks");
 const { migrateI18n } = require("./migrateI18n");
 const { migrateComponents } = require("./migrateComponents");
 
-// TODO fix migrating admin, user permissions and core store?
 const migrations = [
   migrateCoreStore,
   migrateAdmin,

@@ -179,12 +179,13 @@ async function migrateModels(tables) {
       }
     }
     await migrate(modelDef.collectionName, modelDef.collectionName, (item) => {
-      
       if (modelDef.options.timestamps === false) {
         return migrateItem(item);
-      }
-      else {
-        const timestamps = modelDef.options.timestamps === true ? ["created_at", "updated_at"] : modelDef.options.timestamps;
+      } else {
+        const timestamps =
+          modelDef.options.timestamps === true
+            ? ["created_at", "updated_at"]
+            : modelDef.options.timestamps;
         const [createdAt, updatedAt] = timestamps;
 
         const newItem = {
@@ -199,7 +200,6 @@ async function migrateModels(tables) {
       }
     });
   }
-
   await migrateRelations(tables);
 }
 
