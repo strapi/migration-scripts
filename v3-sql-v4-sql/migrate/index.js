@@ -22,7 +22,6 @@ const migrations = [
   migrateCustom,
   migrateWebhooks,
   migrateI18n,
-  migrateComponents,
   migrateFiles,
 ];
 
@@ -66,7 +65,13 @@ async function migrate() {
     (table) => !processedTables.includes(table)
   );
 
-  await migrateModels(unprocessedTables);
+  await migrateComponents.migrateTables(unprocessedTables);
+
+  processedTables.push(...migrateComponents.processedTables);
+
+  await migrateModels(
+    tables.filter((table) => !processedTables.includes(table))
+  );
 
   if (isPGSQL) {
     await dbV4.raw("set session_replication_role to DEFAULT;");

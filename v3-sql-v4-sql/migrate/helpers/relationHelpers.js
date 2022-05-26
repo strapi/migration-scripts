@@ -9,6 +9,7 @@ const {
 const pluralize = require("pluralize");
 const { migrate } = require("./migrate");
 const { migrateItem } = require("./migrateFields");
+const { omit } = require("lodash");
 
 function addRelation(
   { uid, model, attribute, type, modelF = undefined, attributeF = undefined },
@@ -120,9 +121,21 @@ async function migrateManyToManyRelation(relation, sourceTable) {
         item[`${relation.attributeF}_id`],
     }));
   } else {
-    await migrate(sourceTable, relation.table, ({ id, ...item }) =>
-      migrateItem(item)
-    );
+    const fromModelRelation = makeRelationModelId(relation.model);
+    const fromNameRelation = makeRelationModelId(relation.entityName);
+
+    await migrate(sourceTable, relation.table, ({ id, ...item }) => {
+      if (fromModelRelation === fromNameRelation) {
+        return migrateItem(item);
+      }
+
+      const newRelationObject = {
+        ...item,
+        [fromNameRelation]: item[fromModelRelation],
+      };
+
+      return migrateItem(omit(newRelationObject, [fromModelRelation]));
+    });
   }
 }
 

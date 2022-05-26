@@ -20,7 +20,7 @@ var relations = [];
 const skipAttributes = ["created_by", "updated_by"];
 
 const processedTables = [];
-async function migrateTables() {
+async function migrateTables(tables) {
   console.log("Migrating components");
 
   const modelsDefs = await dbV3("core_store").where(
@@ -114,7 +114,7 @@ async function migrateTables() {
     processedTables.push(table);
   }
 
-  await migrateRelations(componentsToMigrate, relations);
+  await migrateRelations([...componentsToMigrate, ...tables], relations);
 
   const componentsMap = modelsDefs
     .map((item) => JSON.parse(item.value))
