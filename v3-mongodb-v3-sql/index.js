@@ -102,7 +102,7 @@ async function run() {
       return acc;
     }, {});
 
-    const dialect = require(`./dialects/${knex.client.config.client}`);
+    const dialect = require(`./dialects/${knex.client.config.client}`)(knex);
     // TODO: clear all tables before starting
     await dialect.delAllTables(knex);
     // TODO: disable all checks during migration
