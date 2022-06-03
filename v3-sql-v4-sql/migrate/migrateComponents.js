@@ -1,11 +1,26 @@
-const { dbV3, isPGSQL, isSQLITE, isMYSQL } = require("../config/database");
+const {
+  dbV3,
+  isPGSQL,
+  isSQLITE,
+  isMYSQL,
+  dbV4,
+} = require("../config/database");
 const { omit } = require("lodash");
 const { migrate } = require("./helpers/migrate");
 const { singular } = require("pluralize");
 const { migrateUids } = require("./helpers/migrateValues");
+const { migrateItem } = require("./helpers/migrateFields");
+
+const {
+  processRelation,
+  migrateRelations,
+} = require("./helpers/relationHelpers");
+
+var relations = [];
+const skipAttributes = ["created_by", "updated_by"];
 
 const processedTables = [];
-async function migrateTables() {
+async function migrateTables(tables) {
   console.log("Migrating components");
 
   const modelsDefs = await dbV3("core_store").where(
@@ -64,9 +79,42 @@ async function migrateTables() {
   }
 
   for (const table of componentsToMigrate) {
-    await migrate(table, table);
+    const componentDefinition = modelsDefs.find(
+      (item) => JSON.parse(item.value).collectionName === table
+    );
+
+    const componentDefinitionObject = JSON.parse(componentDefinition.value);
+
+    const omitAttributes = [];
+    for (const [key, value] of Object.entries(
+      componentDefinitionObject.attributes
+    )) {
+      if (skipAttributes.includes(key)) {
+        continue;
+      }
+      if (value.model || value.collection) {
+        processRelation(
+          {
+            key,
+            value,
+            collectionName: componentDefinitionObject.collectionName,
+            uid: componentDefinitionObject.uid,
+          },
+          relations
+        );
+        omitAttributes.push(key);
+      }
+    }
+
+    await migrate(table, table, (data) => {
+      const omitedData = omit(data, omitAttributes);
+
+      return migrateItem(omitedData);
+    });
     processedTables.push(table);
   }
+
+  await migrateRelations([...componentsToMigrate, ...tables], relations);
 
   const componentsMap = modelsDefs
     .map((item) => JSON.parse(item.value))

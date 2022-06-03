@@ -15,7 +15,6 @@ const { migrateWebhooks } = require("./migrateWebhooks");
 const { migrateI18n } = require("./migrateI18n");
 const { migrateComponents } = require("./migrateComponents");
 
-// TODO fix migrating admin, user permissions and core store?
 const migrations = [
   migrateCoreStore,
   migrateAdmin,
@@ -23,7 +22,6 @@ const migrations = [
   migrateCustom,
   migrateWebhooks,
   migrateI18n,
-  migrateComponents,
   migrateFiles,
 ];
 
@@ -67,7 +65,13 @@ async function migrate() {
     (table) => !processedTables.includes(table)
   );
 
-  await migrateModels(unprocessedTables);
+  await migrateComponents.migrateTables(unprocessedTables);
+
+  processedTables.push(...migrateComponents.processedTables);
+
+  await migrateModels(
+    tables.filter((table) => !processedTables.includes(table))
+  );
 
   if (isPGSQL) {
     await dbV4.raw("set session_replication_role to DEFAULT;");
