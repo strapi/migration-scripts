@@ -15,6 +15,7 @@ const {
   processRelation,
   migrateRelations,
 } = require("./helpers/relationHelpers");
+const { verboseLog } = require("./helpers/logging");
 
 var relations = [];
 const skipAttributes = ["created_by", "updated_by"];
@@ -78,6 +79,8 @@ async function migrateTables(tables) {
       .filter((item) => !componentsToMigrate.includes(item));
   }
 
+  verboseLog("MIGRATING COMPONENTS", JSON.stringify(componentsToMigrate));
+
   for (const table of componentsToMigrate) {
     const componentDefinition = modelsDefs.find(
       (item) => JSON.parse(item.value).collectionName === table
@@ -125,6 +128,11 @@ async function migrateTables(tables) {
       }),
       {}
     );
+
+  verboseLog(
+    "MIGRATING COMPONENTS RELATIONS",
+    JSON.stringify(componentRelationsTables)
+  );
 
   for (const table of componentRelationsTables) {
     const tableName = table.replace(/_components$/, "");

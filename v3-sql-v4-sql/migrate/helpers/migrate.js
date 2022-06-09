@@ -6,6 +6,7 @@ const {
   isSQLITE,
 } = require("../../config/database");
 const { BATCH_SIZE } = require("./constants");
+const { verboseLog } = require("./logging");
 const { migrateItems } = require("./migrateFields");
 
 async function migrate(source, destination, itemMapper = undefined) {
@@ -122,6 +123,7 @@ async function migrate(source, destination, itemMapper = undefined) {
     const migratedItems = migrateItems(withParsedJsonFields, itemMapper);
     if (migratedItems.length > 0) {
       await dbV4(destination).insert(migratedItems);
+      verboseLog("MIGRATED", JSON.stringify(migratedItems))
     }
   }
 
