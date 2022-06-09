@@ -1,5 +1,6 @@
 const { omit } = require("lodash");
 const { dbV3 } = require("../config/database");
+const { verboseLog } = require("./helpers/logging");
 const { migrate } = require("./helpers/migrate");
 const { migrateItem } = require("./helpers/migrateFields");
 
@@ -40,6 +41,8 @@ async function migrateModels(tables) {
         omitAttributes.push(key);
       }
     }
+
+    verboseLog("MIGRATING MODEL", modelDef.collectionName);
     await migrate(modelDef.collectionName, modelDef.collectionName, (item) => {
       if (modelDef.options.timestamps === false) {
         return migrateItem(item);
