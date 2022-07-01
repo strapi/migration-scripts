@@ -1,0 +1,42 @@
+// Match old Strapi packages to their new names on npm
+const toBeDeleted = Symbol();
+
+const strapiPackages = {
+  strapi: '@strapi/strapi',
+  'strapi-admin': '@strapi/admin',
+  'strapi-connector-bookshelf': toBeDeleted,
+  'strapi-database': '@strapi/database',
+  'strapi-generate': '@strapi/generate',
+  'strapi-generate-api': '@strapi/generate-api',
+  'strapi-generate-controller': '@strapi/generate-controller',
+  'strapi-generate-model': '@strapi/generate-model',
+  'strapi-generate-new': '@strapi/generate-new',
+  'strapi-generate-plugin': '@strapi/generate-plugin',
+  'strapi-generate-policy': '@strapi/generate-policy',
+  'strapi-generate-service': '@strapi/generate-service',
+  'strapi-helper-plugin': '@strapi/helper-plugin',
+  'strapi-hook-ejs': toBeDeleted,
+  'strapi-hook-redis': toBeDeleted,
+  'strapi-middleware-views': toBeDeleted,
+  'strapi-plugin-content-manager': '@strapi/plugin-content-manager',
+  'strapi-plugin-content-type-builder': '@strapi/plugin-content-type-builder',
+  'strapi-plugin-documentation': '@strapi/plugin-documentation',
+  'strapi-plugin-email': '@strapi/plugin-email',
+  'strapi-plugin-graphql': '@strapi/plugin-graphql',
+  'strapi-plugin-i18n': '@strapi/plugin-i18n',
+  'strapi-plugin-sentry': '@strapi/plugin-sentry',
+  'strapi-plugin-upload': '@strapi/plugin-upload',
+  'strapi-plugin-users-permissions': '@strapi/plugin-users-permissions',
+  'strapi-provider-amazon-ses': '@strapi/provider-email-amazon-ses',
+  'strapi-provider-email-mailgun': '@strapi/provider-email-mailgun',
+  'strapi-provider-email-nodemailer': '@strapi/provider-email-nodemailer',
+  'strapi-provider-email-sendgrid': '@strapi/provider-email-sendgrid',
+  'strapi-provider-email-sendmail': '@strapi/provider-email-sendmail',
+  'strapi-provider-upload-aws-s3': '@strapi/provider-upload-aws-s3',
+  'strapi-provider-upload-cloudinary': '@strapi/provider-upload-cloudinary',
+  'strapi-provider-upload-local': '@strapi/provider-upload-local',
+  'strapi-provider-upload-rackspace': '@strapi/provider-upload-rackspace',
+  'strapi-utils': '@strapi/utils',
+};
+
+module.exports = { strapiPackages, toBeDeleted };

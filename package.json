@@ -1,0 +1,11 @@
+{
+  "name": "v3-to-v4",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "v3-sql-v4-sql",
+    "v3-mongodb-v3-sql",
+    "packages/*"
+  ]
+}
