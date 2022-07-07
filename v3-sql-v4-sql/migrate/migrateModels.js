@@ -56,9 +56,11 @@ async function migrateModels(tables) {
           updated_at: item[updatedAt],
         };
 
-        return migrateItem(
-          omit(newItem, [...omitAttributes, createdAt, updatedAt])
-        );
+        let omitFields = [...omitAttributes];
+        if(createdAt != "created_at") omitFields.push(createdAt);
+        if(updatedAt != "updated_at") omitFields.push(updatedAt);
+
+        return migrateItem(omit(newItem, omitFields));
       }
     });
   }
