@@ -50,6 +50,9 @@ async function migrateTables() {
 
       if (value.layouts) {
         value.layouts.list = value.layouts.list.map((item) => camelCase(item));
+        value.layouts.edit = value.layouts.edit.map((row) =>
+          row.map((column) => ({ ...column, name: camelCase(column.name) }))
+        );
       }
 
       const valueToSave = value.metadatas
