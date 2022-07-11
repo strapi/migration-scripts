@@ -8,11 +8,11 @@
   },
   "private": true,
   "dependencies": {
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.1",
     "knex": "0.95.15",
     "lodash": "^4.17.21",
-    "mongodb": "^4.4.1",
+    "mongodb": "^4.7.0",
     "pluralize": "^8.0.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.8"
   }
 }
