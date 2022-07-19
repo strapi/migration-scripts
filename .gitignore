@@ -144,4 +144,7 @@ dist
 # Database files
 data.db
 
-# End of https://www.toptal.com/developers/gitignore/api/node
+# End of https://www.toptal.com/developers/gitignore/api/nod
+
+# IDE config
+.idea

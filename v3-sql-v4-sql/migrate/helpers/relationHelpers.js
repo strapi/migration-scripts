@@ -158,7 +158,7 @@ async function migrateRelations(tables, relations) {
 
   if (isMYSQL) {
     v4Tables = (
-      await dbV3("information_schema.tables").select("table_name")
+      await dbV4("information_schema.tables").select("table_name")
     ).map((row) => row.table_name);
   }
 
