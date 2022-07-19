@@ -73,6 +73,9 @@ function processRelation({ key, value, collectionName, uid }, relations) {
 }
 
 function makeRelationModelId(model) {
+  if (model === 'teacher_notes') {
+    return 'teacher_notes_id';
+  }
   return `${snakeCase(pluralize(model, 1))}_id`;
 }
 
