@@ -145,3 +145,6 @@ dist
 data.db
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+
+# IDE config
+.idea
