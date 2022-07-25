@@ -2,6 +2,11 @@
 
 This repository contains notes and scripts to run data migrations between Strapi versions
 
+## Datacamp CMS migration
+
+1. `cd v3-sql-v4-sql`
+2. Follow instructions in the [sql migration readme](./v3-sql-v4-sql/README.md)
+
 ## Supported Databases
 
 When referring to `SQL` databases we mean officially supported databases by Strapi:
@@ -15,7 +20,7 @@ For more information on supported databases, please see the [deployment guidelin
 
 ## Script Status
 
-Some scripts may be in various states, *you should pay careful attention to what state the script is in as it may not have had significant testing for all use-cases*! Current script states are as follows:
+Some scripts may be in various states, _you should pay careful attention to what state the script is in as it may not have had significant testing for all use-cases_! Current script states are as follows:
 
 - **Alpha**: We have not tested this with any "real world" like applications, only in limited environments
 - **Beta**: We have tested this in a small number of "real world" like applications and/or we have had some actual users do closed beta testing on it

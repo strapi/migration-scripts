@@ -5,6 +5,7 @@ const {
   isSQLITE,
   isMYSQL,
 } = require("../config/database");
+const { migrateSchemaPrep } = require("./migrateSchemaPrep");
 const { migrateCustom } = require("./migrateCustom");
 const { migrateAdmin } = require("./migrateAdmin");
 const { migrateCoreStore } = require("./migrateCoreStore");
@@ -16,6 +17,7 @@ const { migrateI18n } = require("./migrateI18n");
 const { migrateComponents } = require("./migrateComponents");
 
 const migrations = [
+  migrateSchemaPrep,
   migrateCoreStore,
   migrateAdmin,
   migrateUsers,
