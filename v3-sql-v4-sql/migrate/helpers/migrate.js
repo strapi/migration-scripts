@@ -7,6 +7,7 @@ const {
 } = require("../../config/database");
 const { BATCH_SIZE } = require("./constants");
 const { migrateItems } = require("./migrateFields");
+const { pick } = require("lodash");
 
 async function migrate(source, destination, itemMapper = undefined) {
   if (isMYSQL) {
@@ -103,6 +104,13 @@ async function migrate(source, destination, itemMapper = undefined) {
 
   console.log(`Migrating ${count} items from ${source} to ${destination}`);
   await dbV4(destination).del();
+
+  console.log("DBV4 ITEMS");
+
+  const tableColumnsInfo = await dbV4(destination).columnInfo();
+
+  const tableColumns = Object.keys(tableColumnsInfo);
+
   for (let page = 0; page * BATCH_SIZE < count; page++) {
     console.log(`${source} batch #${page + 1}`);
     const items = await dbV3(source)
@@ -119,7 +127,27 @@ async function migrate(source, destination, itemMapper = undefined) {
       return item;
     });
 
-    const migratedItems = migrateItems(withParsedJsonFields, itemMapper);
+    const migratedItems = migrateItems(withParsedJsonFields, itemMapper).map(
+      (item) => {
+        const filteredItems = pick(item, tableColumns);
+
+        if (Object.keys(item).length !== Object.keys(filteredItems).length) {
+          const filteredColumns = Object.keys(item).filter(function (obj) {
+            return Object.keys(filteredItems).indexOf(obj) == -1;
+          });
+
+          console.log(
+            "WARNING - items of " +
+              destination +
+              " was filtered " +
+              JSON.stringify(filteredColumns)
+          );
+        }
+
+        return filteredItems;
+      }
+    );
+
     if (migratedItems.length > 0) {
       await dbV4(destination).insert(migratedItems);
     }
