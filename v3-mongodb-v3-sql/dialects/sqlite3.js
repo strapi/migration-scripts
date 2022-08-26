@@ -20,5 +20,9 @@ module.exports = (knex, inspector) => ({
 
   async beforeMigration() {
     // do nothing because sqlite3 doesn't have foreign key checks
+  },
+
+  async afterMigration() {
+    // do nothing because sqlite3 doesn't have foreign key checks
   }
 });

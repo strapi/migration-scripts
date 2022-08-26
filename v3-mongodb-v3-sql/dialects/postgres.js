@@ -17,6 +17,10 @@ module.exports = (knex, inspector) => ({
   },
 
   async beforeMigration() {
-    await knex.raw(`SET session_replication_role = 'replica';`);
+    // await knex.raw(`SET session_replication_role = 'replica';`);
+  },
+
+  async afterMigration() {
+    // await knex.raw(`SET session_replication_role = 'origin';`);
   },
 });
