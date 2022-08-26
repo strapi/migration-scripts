@@ -8,7 +8,7 @@ module.exports = (knex, inspector) => ({
 
       await knex.raw(`
       ALTER table
-        \"${table}\"
+        \`${table}\`
       AUTO_INCREMENT = 1;
       `)
     }

@@ -150,3 +150,7 @@ data.db
 .idea
 
 v3-mongodb-v3-sql/.env.test
+
+v3-mongodb-v3-sql/.env.pg
+
+v3-mongodb-v3-sql/.env.sqlite
