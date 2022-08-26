@@ -17,6 +17,6 @@ module.exports = (knex, inspector) => ({
   },
 
   async beforeMigration() {
-    // do nothing
+    await knex.raw(`SET foreign_key_checks = 0;`);
   }
 });

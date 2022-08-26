@@ -108,9 +108,7 @@ async function run() {
       knex,
       inspector
     );
-    // TODO: clear all tables before starting
     await dialect.delAllTables(knex);
-    // TODO: disable all checks during migration
     await dialect.beforeMigration?.(knex);
 
     // 1st pass: for each document create a new row and store id in a map

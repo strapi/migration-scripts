@@ -10,13 +10,13 @@ module.exports = (knex, inspector) => ({
       ALTER SEQUENCE
         \"${table}_id_seq\"
       RESTART WITH 1;
-      `)
+      `);
     }
 
     return tableList;
   },
 
   async beforeMigration() {
-    // do nothing
-  }
+    await knex.raw(`SET session_replication_role = 'replica';`);
+  },
 });
