@@ -77,11 +77,8 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+*.env*
+!*.env*.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -148,9 +145,3 @@ data.db
 
 # IDE config
 .idea
-
-v3-mongodb-v3-sql/.env.test
-
-v3-mongodb-v3-sql/.env.pg
-
-v3-mongodb-v3-sql/.env.sqlite
