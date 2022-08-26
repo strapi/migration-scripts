@@ -1,28 +1,22 @@
-module.exports = (knex) => ({
+module.exports = (knex, inspector) => ({
   async delAllTables() {
-    console.log(knex);
-    const res = await knex.raw(`
-    SELECT 
-      tablename
-    FROM 
-      pg_tables
-    WHERE 
-      schemaname='public';
-    `);
-
-    const tableList = res.map((r) => r.name);
+    const tableList = await inspector.tables();
 
     // clear all tables
     for (const table of tableList) {
       await knex(table).del();
 
       await knex.raw(`
-      TRUNCATE TABLE
-        ${table}
-      RESTART IDENTITY CASCADE;
+      ALTER SEQUENCE
+        \"${table}_id_seq\"
+      RESTART WITH 1;
       `)
     }
 
     return tableList;
   },
+
+  async beforeMigration() {
+    // do nothing
+  }
 });

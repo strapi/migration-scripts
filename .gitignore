@@ -148,3 +148,5 @@ data.db
 
 # IDE config
 .idea
+
+v3-mongodb-v3-sql/.env.test

@@ -465,6 +465,14 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+knex-schema-inspector@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/knex-schema-inspector/-/knex-schema-inspector-2.0.4.tgz#2f39cef2112656c80bc20c1fc81d1e41bc334cd1"
+  integrity sha512-UGCB6sXhejQMr9Kd39hacAdIG8JEhr9LboOuBTT41jvDgGu0FRbdtqdnWfbv56Sfz5YoN5zkJt7upZCLEaY73Q==
+  dependencies:
+    lodash.flatten "^4.4.0"
+    lodash.isnil "^4.0.0"
+
 knex@0.95.15:
   version "0.95.15"
   resolved "https://registry.yarnpkg.com/knex/-/knex-0.95.15.tgz#39d7e7110a6e2ad7de5d673d2dea94143015e0e7"
@@ -483,6 +491,16 @@ knex@0.95.15:
     resolve-from "^5.0.0"
     tarn "^3.0.1"
     tildify "2.0.0"
+
+lodash.flatten@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/lodash.flatten/-/lodash.flatten-4.4.0.tgz#f31c22225a9632d2bbf8e4addbef240aa765a61f"
+  integrity sha512-C5N2Z3DgnnKr0LOpv/hKCgKdb7ZZwafIrsesve6lmzvZIRZRGaZ/l6Q8+2W7NaT+ZwO3fFlSCzCzrDCFdJfZ4g==
+
+lodash.isnil@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/lodash.isnil/-/lodash.isnil-4.0.0.tgz#49e28cd559013458c814c5479d3c663a21bfaa6c"
+  integrity sha512-up2Mzq3545mwVnMhTDMdfoG1OurpA/s5t88JmQX809eH3C8491iu2sfKhTfhQtKY78oPNhiaHJUpT/dUDAAtng==
 
 lodash@^4.17.21:
   version "4.17.21"

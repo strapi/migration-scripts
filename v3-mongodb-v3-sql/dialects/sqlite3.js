@@ -1,4 +1,4 @@
-module.exports = (knex) => ({
+module.exports = (knex, inspector) => ({
   async clearSequences(tableList) {
     const hasTable = await knex.schema.hasTable(`sqlite_sequence`);
 
@@ -8,17 +8,7 @@ module.exports = (knex) => ({
   },
 
   async delAllTables() {
-    const res = await knex.raw(`
-    SELECT 
-      name
-    FROM 
-      sqlite_schema
-    WHERE 
-      type ='table' AND 
-      name NOT LIKE 'sqlite_%';
-    `);
-
-    const tableList = res.map((r) => r.name);
+    const tableList = await inspector.tables();
 
     // clear all tables
     for (const table of tableList) {
@@ -27,4 +17,8 @@ module.exports = (knex) => ({
 
     return this.clearSequences(tableList);
   },
+
+  async beforeMigration() {
+    // do nothing
+  }
 });

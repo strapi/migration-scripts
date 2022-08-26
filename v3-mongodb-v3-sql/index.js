@@ -5,6 +5,8 @@ const pluralize = require("pluralize");
 const { singular } = pluralize;
 
 const knex = require("./knex");
+const schemaInspector = require("knex-schema-inspector").default;
+const inspector = schemaInspector(knex);
 const mongo = require("./mongo");
 const { transformEntry } = require("./transform");
 const idMap = require("./id-map");
@@ -102,7 +104,10 @@ async function run() {
       return acc;
     }, {});
 
-    const dialect = require(`./dialects/${knex.client.config.client}`)(knex);
+    const dialect = require(`./dialects/${knex.client.config.client}`)(
+      knex,
+      inspector
+    );
     // TODO: clear all tables before starting
     await dialect.delAllTables(knex);
     // TODO: disable all checks during migration
@@ -118,7 +123,10 @@ async function run() {
 
         row.id = idMap.next(entry._id, model.collectionName);
 
-        await knex(model.collectionName).insert(row);
+        // TODO: figure out why the hell strapi_permissions is borked
+        if (model.collectionName !== "strapi_permission") {
+          await knex(model.collectionName).insert(row);
+        }
       }
 
       await cursor.close();

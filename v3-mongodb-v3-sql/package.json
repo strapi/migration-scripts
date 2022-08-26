@@ -10,6 +10,7 @@
   "dependencies": {
     "dotenv": "^16.0.1",
     "knex": "0.95.15",
+    "knex-schema-inspector": "^2.0.4",
     "lodash": "^4.17.21",
     "mongo-uri-builder": "^4.0.0",
     "mongodb": "^4.7.0",
