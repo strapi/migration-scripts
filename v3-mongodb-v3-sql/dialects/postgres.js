@@ -11,7 +11,7 @@ module.exports = (knex, inspector) => ({
   },
 
   async beforeMigration() {
-    // await knex.raw(`SET session_replication_role = 'replica';`);
+    // do nothing for postgres
   },
 
   async afterMigration() {
@@ -19,7 +19,7 @@ module.exports = (knex, inspector) => ({
 
     // restart sequence for tables
     for (const table of tableList) {
-      let result = await knex.raw("select max(id) from ??", [table]);
+      let result = await knex.raw('select max(id) from ??', [table]);
       const max = result.rows[0].max;
 
       if (max) {
@@ -27,10 +27,9 @@ module.exports = (knex, inspector) => ({
           `
         ALTER SEQUENCE ?? RESTART WITH ??;
         `,
-          [table + "_id_seq", max + 1]
+          [table + '_id_seq', max + 1]
         );
       }
     }
-    // await knex.raw(`SET session_replication_role = 'origin';`);
   },
 });
