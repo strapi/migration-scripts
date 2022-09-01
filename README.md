@@ -24,7 +24,7 @@ Some scripts may be in various states, *you should pay careful attention to what
 
 ## Scripts
 
-- [Migration from v3 MongoDB to v3 SQL](./v3-mongodb-v3-sql/README.md) - **Currently in Alpha Testing**
+- [Migration from v3 MongoDB to v3 SQL](./v3-mongodb-v3-sql/README.md) - **Currently in Beta Testing**
 - [Migration from v3 SQL to v4 SQL](./v3-sql-v4-sql/README.md) - **Currently in Beta Testing**
 
 ## Callouts

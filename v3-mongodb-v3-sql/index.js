@@ -1,13 +1,15 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const _ = require("lodash");
-const pluralize = require("pluralize");
+const _ = require('lodash');
+const pluralize = require('pluralize');
 const { singular } = pluralize;
 
-const knex = require("./knex");
-const mongo = require("./mongo");
-const { transformEntry } = require("./transform");
-const idMap = require("./id-map");
+const knex = require('./knex');
+const schemaInspector = require('knex-schema-inspector').default;
+const inspector = schemaInspector(knex);
+const mongo = require('./mongo');
+const { transformEntry } = require('./transform');
+const idMap = require('./id-map');
 
 const getGlobalId = (model, modelName, prefix) => {
   let globalId = prefix ? `${prefix}-${modelName}` : modelName;
@@ -16,11 +18,11 @@ const getGlobalId = (model, modelName, prefix) => {
 };
 
 const getCollectionName = (associationA, associationB) => {
-  if (associationA.dominant && _.has(associationA, "collectionName")) {
+  if (associationA.dominant && _.has(associationA, 'collectionName')) {
     return associationA.collectionName;
   }
 
-  if (associationB.dominant && _.has(associationB, "collectionName")) {
+  if (associationB.dominant && _.has(associationB, 'collectionName')) {
     return associationB.collectionName;
   }
 
@@ -33,15 +35,13 @@ const getCollectionName = (associationA, associationB) => {
       return a.collection < b.collection ? -1 : 1;
     })
     .map((table) => {
-      return _.snakeCase(
-        `${pluralize.plural(table.collection)}_${pluralize.plural(table.via)}`
-      );
+      return _.snakeCase(`${pluralize.plural(table.collection)}_${pluralize.plural(table.via)}`);
     })
-    .join("__");
+    .join('__');
 };
 
 async function getModelDefs(db) {
-  const coreStore = db.collection("core_store");
+  const coreStore = db.collection('core_store');
 
   const cursor = coreStore.find({
     key: { $regex: /^model_def/ },
@@ -52,10 +52,10 @@ async function getModelDefs(db) {
     .map((model) => {
       const { uid } = model;
 
-      if (!model.uid.includes("::")) {
+      if (!model.uid.includes('::')) {
         return {
           ...model,
-          modelName: uid.split(".")[1],
+          modelName: uid.split('.')[1],
           globalId: _.upperFirst(_.camelCase(`component_${uid}`)),
         };
       }
@@ -64,15 +64,15 @@ async function getModelDefs(db) {
       let apiName;
       let modelName;
 
-      if (uid.startsWith("strapi::")) {
-        plugin = "admin";
-        modelName = uid.split("::")[1];
-      } else if (uid.startsWith("plugins")) {
-        plugin = uid.split("::")[1].split(".")[0];
-        modelName = uid.split("::")[1].split(".")[1];
-      } else if (uid.startsWith("application")) {
-        apiName = uid.split("::")[1].split(".")[0];
-        modelName = uid.split("::")[1].split(".")[1];
+      if (uid.startsWith('strapi::')) {
+        plugin = 'admin';
+        modelName = uid.split('::')[1];
+      } else if (uid.startsWith('plugins')) {
+        plugin = uid.split('::')[1].split('.')[0];
+        modelName = uid.split('::')[1].split('.')[1];
+      } else if (uid.startsWith('application')) {
+        apiName = uid.split('::')[1].split('.')[0];
+        modelName = uid.split('::')[1].split('.')[1];
       }
 
       return {
@@ -93,7 +93,7 @@ async function run() {
   try {
     await mongo.connect();
 
-    const db = mongo.db("strapi");
+    const db = mongo.db('strapi');
 
     const models = await getModelDefs(db);
 
@@ -102,10 +102,8 @@ async function run() {
       return acc;
     }, {});
 
-    const dialect = require(`./dialects/${knex.client.config.client}`)(knex);
-    // TODO: clear all tables before starting
+    const dialect = require(`./dialects/${knex.client.config.client}`)(knex, inspector);
     await dialect.delAllTables(knex);
-    // TODO: disable all checks during migration
     await dialect.beforeMigration?.(knex);
 
     // 1st pass: for each document create a new row and store id in a map
@@ -139,7 +137,7 @@ async function run() {
             continue;
           }
 
-          if (attribute.type === "component") {
+          if (attribute.type === 'component') {
             // create compo links
             const componentModel = modelMap[attribute.component];
             const linkTableName = `${model.collectionName}_components`;
@@ -162,14 +160,12 @@ async function run() {
             continue;
           }
 
-          if (attribute.type === "dynamiczone") {
+          if (attribute.type === 'dynamiczone') {
             // create compo links
             const linkTableName = `${model.collectionName}_components`;
 
             const rows = entry[key].map((mongoLink, idx) => {
-              const componentModel = models.find(
-                (m) => m.globalId === mongoLink.kind
-              );
+              const componentModel = models.find((m) => m.globalId === mongoLink.kind);
 
               return {
                 id: idMap.next(mongoLink._id, linkTableName),
@@ -188,7 +184,7 @@ async function run() {
             continue;
           }
 
-          if (attribute.model === "file" && attribute.plugin === "upload") {
+          if (attribute.model === 'file' && attribute.plugin === 'upload') {
             if (!entry[key]) {
               continue;
             }
@@ -201,13 +197,10 @@ async function run() {
               order: 1,
             };
 
-            await knex("upload_file_morph").insert(row);
+            await knex('upload_file_morph').insert(row);
           }
 
-          if (
-            attribute.collection === "file" &&
-            attribute.plugin === "upload"
-          ) {
+          if (attribute.collection === 'file' && attribute.plugin === 'upload') {
             const rows = entry[key].map((e, idx) => ({
               upload_file_id: idMap.get(e),
               related_id: idMap.get(entry._id),
@@ -217,7 +210,7 @@ async function run() {
             }));
 
             if (rows.length > 0) {
-              await knex("upload_file_morph").insert(rows);
+              await knex('upload_file_morph').insert(rows);
             }
           }
 
@@ -227,43 +220,38 @@ async function run() {
             const targetModel = models.find((m) => {
               return (
                 [attribute.model, attribute.collection].includes(m.modelName) &&
-                (!attribute.plugin ||
-                  (attribute.plugin && attribute.plugin === m.plugin))
+                (!attribute.plugin || (attribute.plugin && attribute.plugin === m.plugin))
               );
             });
 
             const targetAttribute = targetModel?.attributes?.[attribute.via];
 
-            const isOneWay =
-              attribute.model && !attribute.via && attribute.moel !== "*";
+            const isOneWay = attribute.model && !attribute.via && attribute.moel !== '*';
             const isOneToOne =
               attribute.model &&
               attribute.via &&
               targetAttribute?.model &&
-              targetAttribute?.model !== "*";
+              targetAttribute?.model !== '*';
             const isManyToOne =
               attribute.model &&
               attribute.via &&
               targetAttribute?.collection &&
-              targetAttribute?.collection !== "*";
+              targetAttribute?.collection !== '*';
             const isOneToMany =
               attribute.collection &&
               attribute.via &&
               targetAttribute?.model &&
-              targetAttribute?.model !== "*";
+              targetAttribute?.model !== '*';
             const isManyWay =
-              attribute.collection &&
-              !attribute.via &&
-              attribute.collection !== "*";
-            const isMorph =
-              attribute.model === "*" || attribute.collection === "*";
+              attribute.collection && !attribute.via && attribute.collection !== '*';
+            const isMorph = attribute.model === '*' || attribute.collection === '*';
 
             // TODO: check dominant side
             const isManyToMany =
               attribute.collection &&
               attribute.via &&
               targetAttribute?.collection &&
-              targetAttribute?.collection !== "*";
+              targetAttribute?.collection !== '*';
 
             if (isOneWay || isOneToOne || isManyToOne) {
               // TODO: optimize with one updata at the end
@@ -276,7 +264,7 @@ async function run() {
                 .update({
                   [key]: idMap.get(entry[key]),
                 })
-                .where("id", idMap.get(entry._id));
+                .where('id', idMap.get(entry._id));
 
               continue;
             }
@@ -288,8 +276,7 @@ async function run() {
 
             if (isManyWay) {
               const joinTableName =
-                attribute.collectionName ||
-                `${model.collectionName}__${_.snakeCase(key)}`;
+                attribute.collectionName || `${model.collectionName}__${_.snakeCase(key)}`;
 
               const fk = `${singular(model.collectionName)}_id`;
               let otherFk = `${singular(attribute.collection)}_id`;
@@ -314,10 +301,7 @@ async function run() {
 
             if (isManyToMany) {
               if (attribute.dominant) {
-                const joinTableName = getCollectionName(
-                  attribute,
-                  targetAttribute
-                );
+                const joinTableName = getCollectionName(attribute, targetAttribute);
 
                 let fk = `${singular(targetAttribute.collection)}_id`;
                 let otherFk = `${singular(attribute.collection)}_id`;
@@ -357,7 +341,7 @@ async function run() {
     await knex.destroy();
   }
 
-  console.log("Done");
+  console.log('Done');
 }
 
 run().catch(console.dir);

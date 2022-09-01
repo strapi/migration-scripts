@@ -4,14 +4,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "prettier:code": "prettier \"**/*.js\""
   },
   "private": true,
   "dependencies": {
     "dotenv": "^16.0.1",
     "knex": "0.95.15",
+    "knex-schema-inspector": "^2.0.4",
     "lodash": "^4.17.21",
+    "mongo-uri-builder": "^4.0.0",
     "mongodb": "^4.7.0",
+    "mysql": "^2.18.1",
+    "pg": "^8.8.0",
     "pluralize": "^8.0.0",
     "sqlite3": "^5.0.8"
   }
