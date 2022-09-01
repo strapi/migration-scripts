@@ -121,10 +121,6 @@ async function run() {
 
         row.id = idMap.next(entry._id, model.collectionName);
 
-        // TODO: figure out why the hell strapi_permissions is borked
-        // if (model.collectionName !== "strapi_permission") {
-        //   await knex(model.collectionName).insert(row);
-        // }
         await knex(model.collectionName).insert(row);
       }
 

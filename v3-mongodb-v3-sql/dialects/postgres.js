@@ -5,12 +5,6 @@ module.exports = (knex, inspector) => ({
     // clear all tables
     for (const table of tableList) {
       await knex(table).del();
-
-      await knex.raw(`
-      ALTER SEQUENCE
-        \"${table}_id_seq\"
-      RESTART WITH 1;
-      `);
     }
 
     return tableList;
@@ -21,6 +15,22 @@ module.exports = (knex, inspector) => ({
   },
 
   async afterMigration() {
+    const tableList = await inspector.tables();
+
+    // restart sequence for tables
+    for (const table of tableList) {
+      let result = await knex.raw("select max(id) from ??", [table]);
+      const max = result.rows[0].max;
+
+      if (max) {
+        await knex.raw(
+          `
+        ALTER SEQUENCE ?? RESTART WITH ??;
+        `,
+          [table + "_id_seq", max + 1]
+        );
+      }
+    }
     // await knex.raw(`SET session_replication_role = 'origin';`);
   },
 });
