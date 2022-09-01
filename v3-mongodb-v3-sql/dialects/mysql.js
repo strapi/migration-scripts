@@ -10,7 +10,7 @@ module.exports = (knex, inspector) => ({
       ALTER table
         \`${table}\`
       AUTO_INCREMENT = 1;
-      `)
+      `);
     }
 
     return tableList;
@@ -22,5 +22,5 @@ module.exports = (knex, inspector) => ({
 
   async afterMigration() {
     await knex.raw(`SET foreign_key_checks = 1;`);
-  }
+  },
 });

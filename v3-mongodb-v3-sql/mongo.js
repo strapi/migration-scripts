@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient } = require('mongodb');
 const mongoUriBuilder = require('mongo-uri-builder');
 
 const uri = mongoUriBuilder({

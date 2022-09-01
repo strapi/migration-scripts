@@ -1,10 +1,10 @@
-const knex = require("knex");
+const knex = require('knex');
 
 let knexConnection;
 
-if (process.env.SQL_CLIENT === "postgres") {
+if (process.env.SQL_CLIENT === 'postgres') {
   knexConnection = {
-    client: "postgres",
+    client: 'postgres',
     connection: {
       host: process.env.DATABASE_HOST,
       port: process.env.DATABASE_PORT,
@@ -14,9 +14,9 @@ if (process.env.SQL_CLIENT === "postgres") {
       schema: process.env.DATABASE_SCHEMA,
     },
   };
-} else if (process.env.SQL_CLIENT === "mysql") {
+} else if (process.env.SQL_CLIENT === 'mysql') {
   knexConnection = {
-    client: "mysql",
+    client: 'mysql',
     connection: {
       host: process.env.DATABASE_HOST,
       port: process.env.DATABASE_PORT,
@@ -25,7 +25,7 @@ if (process.env.SQL_CLIENT === "postgres") {
       database: process.env.DATABASE_DATABASE,
     },
   };
-} else if (process.env.SQL_CLIENT === "sqlite3") {
+} else if (process.env.SQL_CLIENT === 'sqlite3') {
   knexConnection = {
     client: process.env.SQL_CLIENT,
     connection: {

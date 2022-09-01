@@ -3,7 +3,7 @@ module.exports = (knex, inspector) => ({
     const hasTable = await knex.schema.hasTable(`sqlite_sequence`);
 
     if (hasTable) {
-      await knex("sqlite_sequence").del().whereIn("name", tableList);
+      await knex('sqlite_sequence').del().whereIn('name', tableList);
     }
   },
 
@@ -24,5 +24,5 @@ module.exports = (knex, inspector) => ({
 
   async afterMigration() {
     // do nothing because sqlite3 doesn't have foreign key checks
-  }
+  },
 });
