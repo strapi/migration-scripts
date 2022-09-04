@@ -1,12 +1,11 @@
-const _ = require("lodash/fp");
+const _ = require('lodash/fp');
 
 const isScalar = (attribute) =>
-  _.has("type", attribute) &&
-  !["component", "dynamiczone"].includes(attribute.type);
+  _.has('type', attribute) && !['component', 'dynamiczone'].includes(attribute.type);
 
-const DEFAULT_TIMESTAMPS = ["createdAt", "updatedAt"];
+const DEFAULT_TIMESTAMPS = ['createdAt', 'updatedAt'];
 const getTimestampKeys = (model) => {
-  const tsOption = _.getOr(DEFAULT_TIMESTAMPS, "options.timestamps", model);
+  const tsOption = _.getOr(DEFAULT_TIMESTAMPS, 'options.timestamps', model);
 
   if (tsOption === true) {
     return DEFAULT_TIMESTAMPS;
@@ -17,9 +16,7 @@ const getTimestampKeys = (model) => {
   }
 
   if (!Array.isArray(tsOption) || tsOption.length != 2) {
-    throw new Error(
-      `Expected model.options.timestamps to be true or an array with 2 string`
-    );
+    throw new Error(`Expected model.options.timestamps to be true or an array with 2 string`);
   }
 
   return tsOption;
@@ -47,7 +44,7 @@ function transformEntry(entry, model) {
     }
 
     if (isScalar(attribute)) {
-      if (attribute.type === "json") {
+      if (attribute.type === 'json') {
         res[key] = JSON.stringify(entry[key]);
         return;
       }
