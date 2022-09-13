@@ -129,6 +129,17 @@ async function migrate(source, destination, itemMapper = undefined) {
 
     const migratedItems = migrateItems(withParsedJsonFields, itemMapper).map(
       (item) => {
+
+        if (source.match(/\w*(?=__localizations)/) && destination.match(/\w*(?=_localizations_links)/)) {
+          for (var key in item) {
+            let match = key.match(/(?<=related_)\w*/)
+            if (match) {
+              Object.defineProperty(item, `inv_${match}`, Object.getOwnPropertyDescriptor(item, key));
+              delete item[key];
+            }
+          }
+        }
+
         const filteredItems = pick(item, tableColumns);
 
         if (Object.keys(item).length !== Object.keys(filteredItems).length) {
