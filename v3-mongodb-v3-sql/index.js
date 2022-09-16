@@ -93,7 +93,7 @@ async function run() {
   try {
     await mongo.connect();
 
-    const db = mongo.db('strapi');
+    const db = mongo.db();
 
     const models = await getModelDefs(db);
 
