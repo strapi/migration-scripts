@@ -162,7 +162,7 @@ async function resetTableSequence(destination) {
     if (hasId) {
       const seq = `${destination.slice(0, 56)}_id_seq`;
       await dbV4.raw(
-        `SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM ${destination}))`
+        `SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM '${destination}'))`
       );
     }
   }
