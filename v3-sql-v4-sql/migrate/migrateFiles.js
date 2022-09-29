@@ -33,6 +33,7 @@ async function migrateTables() {
     const withRenamedKeys = Object.keys(item).reduce(
       (acc, item) => {
         if(item.uid.startsWith("application::")){
+          // If v3 uid uses plural collection names this will convert it to singular to match v4
           const singularUid = singular(item.collectionName)
           item.uid = `api::${singularUid}.${singularUid}` 
         }
