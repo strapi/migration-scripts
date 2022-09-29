@@ -3,6 +3,8 @@ const { omit } = require("lodash");
 const { snakeCase } = require("lodash/fp");
 const { dbV3 } = require("../config/database");
 const { migrateUids } = require("./helpers/migrateValues");
+const pluralize = require('pluralize');
+const { singular } = pluralize;
 
 const processedTables = ["upload_file", "upload_file_morph"];
 const newTables = ["files", "files_related_morphs"];
@@ -29,10 +31,15 @@ async function migrateTables() {
 
   await migrate(processedTables[0], newTables[0], (item) => {
     const withRenamedKeys = Object.keys(item).reduce(
-      (acc, key) => ({
-        ...acc,
-        ...{ [snakeCase(key)]: item[key] },
-      }),
+      (acc, item) => {
+        if(item.uid.startsWith("application::")){
+          const singularUid = singular(item.collectionName)
+          item.uid = `api::${singularUid}.${singularUid}` 
+        }
+        return {
+          ...acc,
+          ...{ [snakeCase(key)]: item[key] },
+        }},
       {}
     );
 
