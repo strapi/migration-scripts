@@ -102,7 +102,7 @@ function oneToOneCirvleRelationMapper(relation, item) {
 }
 
 async function migrateOneToOneRelation(relation) {
-  if (pluralize(relation.model, 1) === relation.modelF) {
+  if (pluralize(relation.model, 1) === pluralize(relation.modelF, 1)) {
     await migrate(relation.model, relation.table, (item) =>
       oneToOneCirvleRelationMapper(relation, item)
     );
