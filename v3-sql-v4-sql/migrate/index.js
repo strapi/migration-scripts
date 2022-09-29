@@ -27,6 +27,8 @@ const migrations = [
 
 async function migrate() {
   if (isPGSQL) {
+    await dbV3.raw(`SET search_path TO ${process.env.DATABASE_V3_SCHEMA}`);
+    await dbV4.raw(`SET search_path TO ${process.env.DATABASE_V4_SCHEMA}`);
     await dbV4.raw("set session_replication_role to replica;");
   }
 
