@@ -70,7 +70,7 @@ async function migrate(source, destination, itemMapper = undefined) {
       (
         await dbV3("information_schema.tables")
           .select("table_name")
-          .where("table_schema", "public")
+          .where("table_schema", process.env.DATABASE_V3_SCHEMA)
           .where("table_name", source)
       ).length === 0;
 
@@ -78,7 +78,7 @@ async function migrate(source, destination, itemMapper = undefined) {
       (
         await dbV4("information_schema.tables")
           .select("table_name")
-          .where("table_schema", "public")
+          .where("table_schema",process.env.DATABASE_V4_SCHEMA)
           .where("table_name", destination)
       ).length === 0;
 

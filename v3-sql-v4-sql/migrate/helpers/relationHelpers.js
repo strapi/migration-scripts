@@ -146,7 +146,7 @@ async function migrateRelations(tables, relations) {
     v4Tables = (
       await dbV4("information_schema.tables")
         .select("table_name")
-        .where("table_schema", "public")
+        .where("table_schema",process.env.DATABASE_V4_SCHEMA)
     ).map((row) => row.table_name);
   }
 
