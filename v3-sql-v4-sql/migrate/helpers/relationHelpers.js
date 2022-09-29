@@ -10,6 +10,7 @@ const pluralize = require("pluralize");
 const { migrate } = require("./migrate");
 const { migrateItem } = require("./migrateFields");
 const { omit } = require("lodash");
+const { singular } = pluralize;
 
 function addRelation(
   { uid, model, attribute, type, modelF = undefined, attributeF = undefined },
@@ -102,7 +103,7 @@ function oneToOneCirvleRelationMapper(relation, item) {
 }
 
 async function migrateOneToOneRelation(relation) {
-  if (pluralize(relation.model, 1) === pluralize(relation.modelF, 1)) {
+  if (singular(relation.model) === singular(relation.modelF)) {
     await migrate(relation.model, relation.table, (item) =>
       oneToOneCirvleRelationMapper(relation, item)
     );
