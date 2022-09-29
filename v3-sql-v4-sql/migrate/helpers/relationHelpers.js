@@ -25,7 +25,7 @@ function addRelation(
     type,
     modelF,
     attributeF,
-    table: `${model}_${snakeCase(attribute)}_links`,
+    table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
   });
 }
@@ -63,7 +63,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           model: collectionName,
           attribute: key,
           type: "oneToMany",
-          modelF: value.collection,
+          modelF: snakeCase(value.collection),
           attributeF: value.via,
         },
         relations
