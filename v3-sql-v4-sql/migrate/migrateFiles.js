@@ -1,21 +1,21 @@
-const { migrate } = require("./helpers/migrate");
-const { omit } = require("lodash");
-const { snakeCase } = require("lodash/fp");
-const { dbV3 } = require("../config/database");
-const { migrateUids } = require("./helpers/migrateValues");
-const { resolveSourceTableName } = require("./helpers/tableNameHelpers");
+const { migrate } = require('./helpers/migrate');
+const { omit } = require('lodash');
+const { snakeCase } = require('lodash/fp');
+const { dbV3 } = require('../config/database');
+const { migrateUids } = require('./helpers/migrateValues');
+const { resolveSourceTableName } = require('./helpers/tableNameHelpers');
 
-const processedTables = ["upload_file", "upload_file_morph"];
-const newTables = ["files", "files_related_morphs"];
+const processedTables = ['upload_file', 'upload_file_morph'];
+const newTables = ['files', 'files_related_morphs'];
 
 async function migrateTables() {
   // TODO have to migrate values
-  console.log("Migrating files");
+  console.log('Migrating files');
 
-  const modelsDefs = await dbV3(resolveSourceTableName("core_store")).where(
-    "key",
-    "like",
-    "model_def_%"
+  const modelsDefs = await dbV3(resolveSourceTableName('core_store')).where(
+    'key',
+    'like',
+    'model_def_%'
   );
 
   const componentsMap = modelsDefs
@@ -43,7 +43,7 @@ async function migrateTables() {
       updated_by_id: item.updated_by,
     };
 
-    return omit(newItem, ["created_by", "updated_by"]);
+    return omit(newItem, ['created_by', 'updated_by']);
   });
 
   await migrate(processedTables[1], newTables[1], (item) => {
@@ -53,7 +53,7 @@ async function migrateTables() {
       related_type: componentsMap[item.related_type] || related_type,
     };
 
-    return omit(newItem, ["upload_file_id", "id"]);
+    return omit(newItem, ['upload_file_id', 'id']);
   });
 }
 
