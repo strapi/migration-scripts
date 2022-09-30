@@ -22,8 +22,8 @@ const migrations = [
 async function migrate() {
   if (isPGSQL) {
     // Default to public if no schema is defined
-    if(!process.env.DATABASE_V3_SCHEMA) process.env.DATABASE_V3_SCHEMA = 'public'
-    if(!process.env.DATABASE_V4_SCHEMA) process.env.DATABASE_V4_SCHEMA = 'public'
+    if (!process.env.DATABASE_V3_SCHEMA) process.env.DATABASE_V3_SCHEMA = 'public';
+    if (!process.env.DATABASE_V4_SCHEMA) process.env.DATABASE_V4_SCHEMA = 'public';
 
     try {
       await dbV4.raw('set session_replication_role to replica;');

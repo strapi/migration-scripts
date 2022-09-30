@@ -31,19 +31,17 @@ async function migrateTables() {
     );
 
   await migrate(processedTables[0], newTables[0], (item) => {
-    const withRenamedKeys = Object.keys(item).reduce(
-      (acc, item) => {
-        if(item.uid.startsWith("application::")){
-          // If v3 uid uses plural collection names this will convert it to singular to match v4
-          const singularUid = singular(item.collectionName)
-          item.uid = `api::${singularUid}.${singularUid}` 
-        }
-        return {
-          ...acc,
-          ...{ [snakeCase(key)]: item[key] },
-        }},
-      {}
-    );
+    const withRenamedKeys = Object.keys(item).reduce((acc, item) => {
+      if (item.uid.startsWith('application::')) {
+        // If v3 uid uses plural collection names this will convert it to singular to match v4
+        const singularUid = singular(item.collectionName);
+        item.uid = `api::${singularUid}.${singularUid}`;
+      }
+      return {
+        ...acc,
+        ...{ [snakeCase(key)]: item[key] },
+      };
+    }, {});
 
     const newItem = {
       ...withRenamedKeys,

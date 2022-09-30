@@ -1,6 +1,6 @@
 const pluralize = require('pluralize');
 const _ = require('lodash');
-const {singular} = pluralize
+const { singular } = pluralize;
 
 function mapAction(action) {
   switch (action) {
