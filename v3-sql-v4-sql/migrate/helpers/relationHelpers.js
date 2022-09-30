@@ -4,6 +4,7 @@ const pluralize = require('pluralize');
 const { migrate } = require('./migrate');
 const { migrateItem } = require('./migrateFields');
 const { omit } = require('lodash');
+const { singular } = pluralize;
 
 function addRelation(
   { uid, model, attribute, type, modelF = undefined, attributeF = undefined },
@@ -19,7 +20,7 @@ function addRelation(
     type,
     modelF,
     attributeF,
-    table: `${model}_${snakeCase(attribute)}_links`,
+    table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
   });
 }
@@ -57,7 +58,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           model: collectionName,
           attribute: key,
           type: 'oneToMany',
-          modelF: value.collection,
+          modelF: snakeCase(value.collection),
           attributeF: value.via,
         },
         relations
@@ -96,7 +97,7 @@ function oneToOneCirvleRelationMapper(relation, item) {
 }
 
 async function migrateOneToOneRelation(relation) {
-  if (pluralize(relation.model, 1) === relation.modelF) {
+  if (singular(relation.model) === singular(relation.modelF)) {
     await migrate(relation.model, relation.table, (item) =>
       oneToOneCirvleRelationMapper(relation, item)
     );

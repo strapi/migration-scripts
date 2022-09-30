@@ -1,4 +1,6 @@
 const pluralize = require('pluralize');
+const _ = require('lodash');
+const { singular } = pluralize;
 
 function mapAction(action) {
   switch (action) {
@@ -118,13 +120,13 @@ function mapAction(action) {
 }
 
 function migrateUserPermissionAction(type, controller, action) {
+  const migratedController = _.kebabCase(singular(controller));
   var uid = '';
   if (type === 'application') {
-    uid = `api::${controller}`;
+    uid = `api::${migratedController}`;
   } else {
     uid = `plugin::${type}`;
   }
-  const migratedController = pluralize(controller, 1);
   const migratedAction = mapAction(action);
   return `${uid}.${migratedController}.${migratedAction}`;
 }
