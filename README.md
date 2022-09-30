@@ -32,7 +32,7 @@ Some scripts may be in various states, *you should pay careful attention to what
 Huge thank you to the following people, teams, or companies that helped build the content of this repo:
 
 - [Notum Technologies](https://notum.cz/en/) for their incredible help building the v3 to v4 SQL data migration script
-- [aailworth](https://github.com/aailworth)
+- [Anna Ailworth](https://github.com/aailworth)
 - [Bobby Glidwell](https://github.com/bglidwell)
 - [Vítor Manfredini](https://github.com/vitormanfredini)
 - [Troy Whiteley](https://github.com/dawnerd)
