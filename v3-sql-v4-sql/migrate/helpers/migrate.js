@@ -90,7 +90,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   const count =
     (await dbV3(resolveSourceTableName(source)).count().first()).count ||
     (await dbV3(resolveSourceTableName(source)).count().first())['count(*)'];
-  const columnsInfo = await dbV3(resolveSourceTableName(source)).columnInfo();
+  const columnsInfo = await dbV3(source).withSchema(process.env.DATABASE_V3_SCHEMA).columnInfo();
 
   const jsonFields = Object.keys(columnsInfo).filter((column) => {
     return columnsInfo[column].type === 'jsonb';
@@ -99,7 +99,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   console.log(`Migrating ${count} items from ${source} to ${destination}`);
   await dbV4(resolveDestTableName(destination)).del();
 
-  let tableColumnsInfo = await dbV4(destination).columnInfo();
+  let tableColumnsInfo = await dbV4(destination).withSchema(process.env.DATABASE_V4_SCHEMA).columnInfo();
 
   if (isPGSQL) {
     // https://github.com/knex/knex/issues/1490
