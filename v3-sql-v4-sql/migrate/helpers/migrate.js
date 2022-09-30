@@ -102,6 +102,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   let tableColumnsInfo = await dbV4(destination).columnInfo();
 
   if (isPGSQL) {
+    // https://github.com/knex/knex/issues/1490
     tableColumnsInfo = await dbV4(destination)
       .withSchema(process.env.DATABASE_V4_SCHEMA)
       .columnInfo();
