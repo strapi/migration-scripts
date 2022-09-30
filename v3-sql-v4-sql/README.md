@@ -42,5 +42,5 @@ yarn
 
 ## Troubleshooting
 
-- If you get an error around setting `session_replication_role` to `replica` you likely do not have the permissions to do so. You will likely need to do the data migration locally. Also please see [this example]() from one of our community members Sintex on doing this with docker.
+- If you get an error around setting `session_replication_role` to `replica` you likely do not have the permissions to do so. You will likely need to do the data migration locally. Also please see [this example](https://gist.github.com/bglidwell/028b4765ab2d47dd91158713c6b0a0bd) from one of our community members Sintex on setting up a local PG database with [PGAdmin](https://www.pgadmin.org/) with docker to make this easier.
 - It is extremely likely that you will have orphaned entities in your database as Strapi v3 did not have cascading deletes. You will need to manually delete these entities from your database. We do not plan to handle this via this migration script as it requires a deep understanding of your data model and the data in your database.
