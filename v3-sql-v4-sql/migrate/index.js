@@ -22,10 +22,12 @@ const migrations = [
 async function migrate() {
   if (isPGSQL) {
     try {
-      await dbV4.raw("set session_replication_role to replica;");
+      await dbV4.raw('set session_replication_role to replica;');
     } catch (error) {
-      console.log("Error setting session_replication_role to replica, you may get foreign key constraint errors");
-      console.log("Replication role requires specific admin permissions");
+      console.log(
+        'Error setting session_replication_role to replica, you may get foreign key constraint errors'
+      );
+      console.log('Replication role requires specific admin permissions');
     }
   }
 
@@ -36,9 +38,9 @@ async function migrate() {
 
   if (isPGSQL) {
     tables = (
-      await dbV3("information_schema.tables")
-        .select("table_name")
-        .where("table_schema", process.env.DATABASE_V3_SCHEMA)
+      await dbV3('information_schema.tables')
+        .select('table_name')
+        .where('table_schema', process.env.DATABASE_V3_SCHEMA)
     ).map((row) => row.table_name);
   }
 

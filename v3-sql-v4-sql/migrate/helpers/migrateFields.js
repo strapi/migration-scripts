@@ -1,11 +1,11 @@
-const { snakeCase } = require("lodash/fp");
+const { snakeCase } = require('lodash/fp');
 
 function migrateField(fieldName) {
   switch (fieldName) {
-    case "created_by":
-      return "created_by_id";
-    case "updated_by":
-      return "updated_by_id";
+    case 'created_by':
+      return 'created_by_id';
+    case 'updated_by':
+      return 'updated_by_id';
     default:
       return snakeCase(fieldName);
   }
@@ -21,9 +21,7 @@ function migrateItem(item) {
 }
 
 function migrateItems(items, itemMapper = undefined) {
-  return items
-    .map(itemMapper ?? migrateItem)
-    .filter((item) => item !== undefined);
+  return items.map(itemMapper ?? migrateItem).filter((item) => item !== undefined);
 }
 
 module.exports = {

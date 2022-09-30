@@ -1,9 +1,9 @@
-const knex = require("knex");
+const knex = require('knex');
 
 let additionalConfigV3 = {};
 let additionalConfigV4 = {};
 
-if (process.env.DATABASE_CLIENT === "sqlite") {
+if (process.env.DATABASE_CLIENT === 'sqlite') {
   additionalConfigV3 = {
     useNullAsDefault: true,
     connection: {
@@ -19,7 +19,7 @@ if (process.env.DATABASE_CLIENT === "sqlite") {
   };
 }
 
-if (process.env.DATABASE_CLIENT === "pg") {
+if (process.env.DATABASE_CLIENT === 'pg') {
   additionalConfigV3 = {
     connection: {
       host: process.env.DATABASE_V3_HOST,
@@ -42,7 +42,7 @@ if (process.env.DATABASE_CLIENT === "pg") {
   };
 }
 
-if (process.env.DATABASE_CLIENT === "mysql") {
+if (process.env.DATABASE_CLIENT === 'mysql') {
   additionalConfigV3 = {
     connection: {
       host: process.env.DATABASE_V3_HOST,
@@ -75,9 +75,9 @@ const dbV4 = knex({
   ...additionalConfigV4,
 });
 
-const isPGSQL = dbV3.client.config.client === "pg";
-const isSQLITE = dbV3.client.config.client === "sqlite";
-const isMYSQL = dbV3.client.config.client === "mysql";
+const isPGSQL = dbV3.client.config.client === 'pg';
+const isSQLITE = dbV3.client.config.client === 'sqlite';
+const isMYSQL = dbV3.client.config.client === 'mysql';
 
 module.exports = {
   dbV3,

@@ -1,45 +1,36 @@
-const { mapKeys, camelCase, omit } = require("lodash");
-const { dbV3, dbV4, isSQLITE, dbV3withSchema } = require("../config/database");
-const { BATCH_SIZE } = require("./helpers/constants");
-const { apiTokenEntry } = require("./helpers/coreStoreHelpers");
-const { resetTableSequence } = require("./helpers/migrate");
-const { migrateItems } = require("./helpers/migrateFields");
-const { migrateUids, migrateItemValues } = require("./helpers/migrateValues");
-const { resolveSourceTableName, resolveDestTableName } = require("./helpers/tableNameHelpers");
+const { mapKeys, camelCase, omit } = require('lodash');
+const { dbV3, dbV4, isSQLITE, dbV3withSchema } = require('../config/database');
+const { BATCH_SIZE } = require('./helpers/constants');
+const { apiTokenEntry } = require('./helpers/coreStoreHelpers');
+const { resetTableSequence } = require('./helpers/migrate');
+const { migrateItems } = require('./helpers/migrateFields');
+const { migrateUids, migrateItemValues } = require('./helpers/migrateValues');
+const { resolveSourceTableName, resolveDestTableName } = require('./helpers/tableNameHelpers');
 
-const source = "core_store";
-const destination = "strapi_core_store_settings";
+const source = 'core_store';
+const destination = 'strapi_core_store_settings';
 
 const processedTables = [source];
 
 async function migrateTables() {
-  console.log("Migrating Core Store");
-  const sourceSelect = dbV3(resolveSourceTableName(source)).whereNot(
-    "key",
-    "like",
-    "model_def%"
-  );
+  console.log('Migrating Core Store');
+  const sourceSelect = dbV3(resolveSourceTableName(source)).whereNot('key', 'like', 'model_def%');
 
   const count =
     (await sourceSelect.clone().count().first()).count ||
-    (await sourceSelect.clone().count().first())["count(*)"];
+    (await sourceSelect.clone().count().first())['count(*)'];
 
   const countTotal =
     (await dbV3(resolveSourceTableName(source)).count().first()).count ||
-    (await dbV3(resolveSourceTableName(source)).count().first())["count(*)"];
-  console.log(
-    `Migrating ${count}/${countTotal} items from ${source} to ${destination}`
-  );
+    (await dbV3(resolveSourceTableName(source)).count().first())['count(*)'];
+  console.log(`Migrating ${count}/${countTotal} items from ${source} to ${destination}`);
 
   const { id: _id1, ...apiTokenEntry } = await dbV4(resolveDestTableName(destination))
-    .where(
-      "key",
-      "plugin_content_manager_configuration_content_types::admin::api-token"
-    )
+    .where('key', 'plugin_content_manager_configuration_content_types::admin::api-token')
     .first();
 
   const { id: _id2, ...strapiContentTypesSchema } = await dbV4(resolveDestTableName(destination))
-    .where("key", "strapi_content_types_schema")
+    .where('key', 'strapi_content_types_schema')
     .first();
   await dbV4(resolveDestTableName(destination)).del();
   for (var page = 0; page * BATCH_SIZE < count; page++) {
@@ -65,12 +56,7 @@ async function migrateTables() {
         ? {
             ...value,
             metadatas: mapKeys(
-              omit(value.metadatas, [
-                "type",
-                "controller",
-                "policy",
-                "enabled",
-              ]),
+              omit(value.metadatas, ['type', 'controller', 'policy', 'enabled']),
               (_, m) => camelCase(m)
             ),
           }

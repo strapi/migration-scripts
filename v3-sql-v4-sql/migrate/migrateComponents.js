@@ -5,11 +5,8 @@ const { singular } = require('pluralize');
 const { migrateUids } = require('./helpers/migrateValues');
 const { migrateItem } = require('./helpers/migrateFields');
 
-const {
-  processRelation,
-  migrateRelations,
-} = require("./helpers/relationHelpers");
-const { resolveSourceTableName } = require("./helpers/tableNameHelpers");
+const { processRelation, migrateRelations } = require('./helpers/relationHelpers');
+const { resolveSourceTableName } = require('./helpers/tableNameHelpers');
 
 var relations = [];
 const skipAttributes = ['created_by', 'updated_by'];
@@ -18,10 +15,10 @@ const processedTables = [];
 async function migrateTables(tables) {
   console.log('Migrating components');
 
-  const modelsDefs = await dbV3(resolveSourceTableName("core_store")).where(
-    "key",
-    "like",
-    "model_def_%"
+  const modelsDefs = await dbV3(resolveSourceTableName('core_store')).where(
+    'key',
+    'like',
+    'model_def_%'
   );
 
   const componentsToMigrate = modelsDefs
@@ -44,10 +41,10 @@ async function migrateTables(tables) {
 
   if (isPGSQL) {
     componentRelationsTables = (
-      await dbV3("information_schema.tables")
-        .select("table_name")
-        .where("table_schema", process.env.DATABASE_V3_SCHEMA)
-        .where("table_name", "like", "%_components")
+      await dbV3('information_schema.tables')
+        .select('table_name')
+        .where('table_schema', process.env.DATABASE_V3_SCHEMA)
+        .where('table_name', 'like', '%_components')
     )
       .map((row) => row.table_name)
       .filter((item) => !componentsToMigrate.includes(item));
