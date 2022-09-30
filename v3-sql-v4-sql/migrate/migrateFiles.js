@@ -3,6 +3,7 @@ const { omit } = require("lodash");
 const { snakeCase } = require("lodash/fp");
 const { dbV3 } = require("../config/database");
 const { migrateUids } = require("./helpers/migrateValues");
+const { resolveSourceTableName } = require("./helpers/tableNameHelpers");
 
 const processedTables = ["upload_file", "upload_file_morph"];
 const newTables = ["files", "files_related_morphs"];
@@ -11,7 +12,7 @@ async function migrateTables() {
   // TODO have to migrate values
   console.log("Migrating files");
 
-  const modelsDefs = await dbV3("core_store").where(
+  const modelsDefs = await dbV3(resolveSourceTableName("core_store")).where(
     "key",
     "like",
     "model_def_%"

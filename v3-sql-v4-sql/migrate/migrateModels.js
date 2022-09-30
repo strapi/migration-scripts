@@ -1,22 +1,20 @@
-const { omit } = require("lodash");
-const { dbV3 } = require("../config/database");
-const { migrate } = require("./helpers/migrate");
-const { migrateItem } = require("./helpers/migrateFields");
+const { omit } = require('lodash');
+const { dbV3 } = require('../config/database');
+const { migrate } = require('./helpers/migrate');
+const { migrateItem } = require('./helpers/migrateFields');
 
-const {
-  processRelation,
-  migrateRelations,
-} = require("./helpers/relationHelpers");
+const { processRelation, migrateRelations } = require('./helpers/relationHelpers');
+const { resolveSourceTableName } = require('./helpers/tableNameHelpers');
 
 var relations = [];
-const skipAttributes = ["created_by", "updated_by"];
+const skipAttributes = ['created_by', 'updated_by'];
 
 async function migrateModels(tables) {
-  console.log("Migrating Models");
-  const modelsDefs = await dbV3("core_store").where(
-    "key",
-    "like",
-    "model_def_application::%"
+  console.log('Migrating Models');
+  const modelsDefs = await dbV3(resolveSourceTableName('core_store')).where(
+    'key',
+    'like',
+    'model_def_application::%'
   );
 
   for (const modelDefEntry of modelsDefs) {
@@ -46,7 +44,7 @@ async function migrateModels(tables) {
       } else {
         const timestamps =
           modelDef.options.timestamps === true
-            ? ["created_at", "updated_at"]
+            ? ['created_at', 'updated_at']
             : modelDef.options.timestamps;
         const [createdAt, updatedAt] = timestamps;
 
@@ -57,8 +55,8 @@ async function migrateModels(tables) {
         };
 
         let omitFields = [...omitAttributes];
-        if(createdAt != "created_at") omitFields.push(createdAt);
-        if(updatedAt != "updated_at") omitFields.push(updatedAt);
+        if (createdAt != 'created_at') omitFields.push(createdAt);
+        if (updatedAt != 'updated_at') omitFields.push(updatedAt);
 
         return migrateItem(omit(newItem, omitFields));
       }

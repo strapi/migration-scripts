@@ -15,6 +15,7 @@ const {
   processRelation,
   migrateRelations,
 } = require("./helpers/relationHelpers");
+const { resolveSourceTableName } = require("./helpers/tableNameHelpers");
 
 var relations = [];
 const skipAttributes = ["created_by", "updated_by"];
@@ -23,7 +24,7 @@ const processedTables = [];
 async function migrateTables(tables) {
   console.log("Migrating components");
 
-  const modelsDefs = await dbV3("core_store").where(
+  const modelsDefs = await dbV3(resolveSourceTableName("core_store")).where(
     "key",
     "like",
     "model_def_%"
@@ -51,7 +52,7 @@ async function migrateTables(tables) {
     componentRelationsTables = (
       await dbV3("information_schema.tables")
         .select("table_name")
-        .where("table_schema", "public")
+        .where("table_schema", process.env.DATABASE_V3_SCHEMA)
         .where("table_name", "like", "%_components")
     )
       .map((row) => row.table_name)
