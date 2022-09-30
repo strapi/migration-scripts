@@ -1,37 +1,24 @@
-const {
-  dbV3,
-  isPGSQL,
-  isSQLITE,
-  isMYSQL,
-  dbV4,
-} = require("../config/database");
-const { omit } = require("lodash");
-const { migrate } = require("./helpers/migrate");
-const { singular } = require("pluralize");
-const { migrateUids } = require("./helpers/migrateValues");
-const { migrateItem } = require("./helpers/migrateFields");
+const { dbV3, isPGSQL, isSQLITE, isMYSQL, dbV4 } = require('../config/database');
+const { omit } = require('lodash');
+const { migrate } = require('./helpers/migrate');
+const { singular } = require('pluralize');
+const { migrateUids } = require('./helpers/migrateValues');
+const { migrateItem } = require('./helpers/migrateFields');
 
-const {
-  processRelation,
-  migrateRelations,
-} = require("./helpers/relationHelpers");
+const { processRelation, migrateRelations } = require('./helpers/relationHelpers');
 
 var relations = [];
-const skipAttributes = ["created_by", "updated_by"];
+const skipAttributes = ['created_by', 'updated_by'];
 
 const processedTables = [];
 async function migrateTables(tables) {
-  console.log("Migrating components");
+  console.log('Migrating components');
 
-  const modelsDefs = await dbV3("core_store").where(
-    "key",
-    "like",
-    "model_def_%"
-  );
+  const modelsDefs = await dbV3('core_store').where('key', 'like', 'model_def_%');
 
   const componentsToMigrate = modelsDefs
     .filter((item) => {
-      if (item.key.includes("::")) {
+      if (item.key.includes('::')) {
         return false;
       }
 
@@ -49,10 +36,10 @@ async function migrateTables(tables) {
 
   if (isPGSQL) {
     componentRelationsTables = (
-      await dbV3("information_schema.tables")
-        .select("table_name")
-        .where("table_schema", "public")
-        .where("table_name", "like", "%_components")
+      await dbV3('information_schema.tables')
+        .select('table_name')
+        .where('table_schema', 'public')
+        .where('table_name', 'like', '%_components')
     )
       .map((row) => row.table_name)
       .filter((item) => !componentsToMigrate.includes(item));
@@ -60,9 +47,7 @@ async function migrateTables(tables) {
 
   if (isSQLITE) {
     componentRelationsTables = (
-      await dbV3("sqlite_master")
-        .select("name")
-        .where("name", "like", "%_components")
+      await dbV3('sqlite_master').select('name').where('name', 'like', '%_components')
     )
       .map((row) => row.name)
       .filter((item) => !componentsToMigrate.includes(item));
@@ -70,11 +55,11 @@ async function migrateTables(tables) {
 
   if (isMYSQL) {
     componentRelationsTables = (
-      await dbV3("information_schema.tables")
-        .select("table_name")
-        .where("table_name", "like", "%_components")
+      await dbV3('information_schema.tables')
+        .select('table_name')
+        .where('table_name', 'like', '%_components')
     )
-      .map((row) => row.table_name)
+      .map((row) => row.table_name || row.TABLE_NAME)
       .filter((item) => !componentsToMigrate.includes(item));
   }
 
@@ -86,9 +71,7 @@ async function migrateTables(tables) {
     const componentDefinitionObject = JSON.parse(componentDefinition.value);
 
     const omitAttributes = [];
-    for (const [key, value] of Object.entries(
-      componentDefinitionObject.attributes
-    )) {
+    for (const [key, value] of Object.entries(componentDefinitionObject.attributes)) {
       if (skipAttributes.includes(key)) {
         continue;
       }
@@ -127,7 +110,7 @@ async function migrateTables(tables) {
     );
 
   for (const table of componentRelationsTables) {
-    const tableName = table.replace(/_components$/, "");
+    const tableName = table.replace(/_components$/, '');
 
     const tableIdColumn = singular(tableName);
 
@@ -135,8 +118,7 @@ async function migrateTables(tables) {
       const itemNew = {
         ...item,
         entity_id: item[`${tableIdColumn}_id`],
-        component_type:
-          componentsMap[item.component_type] ?? item.component_type,
+        component_type: componentsMap[item.component_type] ?? item.component_type,
       };
 
       return omit(itemNew, [`${tableIdColumn}_id`]);
