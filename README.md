@@ -40,4 +40,4 @@ Huge thank you to the following people, teams, or companies that helped build th
 - [Javier Castro](https://github.com/jacargentina)
 - [Luca Nerlich](https://github.com/LucaNerlich)
 - [Conrad Pinnow](https://github.com/ConradP)
-- [pepijn-vanvlaanderen] (https://github.com/pepijn-vanvlaanderen)
+- [pepijn-vanvlaanderen](https://github.com/pepijn-vanvlaanderen)
