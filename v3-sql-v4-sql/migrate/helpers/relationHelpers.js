@@ -67,17 +67,20 @@ function processRelation({ key, value, collectionName, uid }, relations) {
   }
 }
 
-function makeRelationModelId(model) {
+function makeRelationModelId(model, options = {}) {
+  if (options.isComponent) {
+    return `${snakeCase(model)}_id`;
+  }
   return `${snakeCase(pluralize(model, 1))}_id`;
 }
 
-function oneToOneRelationMapper(relation, item) {
+function oneToOneRelationMapper(relation, item, options = {}) {
   const id = item.id;
   const idF = item[relation.attribute];
 
   if (id && idF) {
     return {
-      [makeRelationModelId(relation.entityName)]: id,
+      [makeRelationModelId(relation.entityName, options)]: id,
       [makeRelationModelId(relation.modelF)]: idF,
     };
   }
@@ -96,13 +99,13 @@ function oneToOneCirvleRelationMapper(relation, item) {
   return undefined;
 }
 
-async function migrateOneToOneRelation(relation) {
+async function migrateOneToOneRelation(relation, options = {}) {
   if (singular(relation.model) === singular(relation.modelF)) {
     await migrate(relation.model, relation.table, (item) =>
       oneToOneCirvleRelationMapper(relation, item)
     );
   } else {
-    await migrate(relation.model, relation.table, (item) => oneToOneRelationMapper(relation, item));
+    await migrate(relation.model, relation.table, (item) => oneToOneRelationMapper(relation, item, options));
   }
 }
 
@@ -131,7 +134,7 @@ async function migrateManyToManyRelation(relation, sourceTable) {
   }
 }
 
-async function migrateRelations(tables, relations) {
+async function migrateRelations(tables, relations, options = {}) {
   let v4Tables = [];
 
   if (isPGSQL) {
@@ -158,7 +161,7 @@ async function migrateRelations(tables, relations) {
 
   for (const relation of relations) {
     if (relation.type === 'oneToOne') {
-      await migrateOneToOneRelation(relation);
+      await migrateOneToOneRelation(relation, options);
     } else if (relation.type === 'manyToMany') {
       var sourceTable = v3RelationTables.find(
         (t) =>

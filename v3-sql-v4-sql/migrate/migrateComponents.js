@@ -102,7 +102,7 @@ async function migrateTables(tables) {
     processedTables.push(table);
   }
 
-  await migrateRelations([...componentsToMigrate, ...tables], relations);
+  await migrateRelations([...componentsToMigrate, ...tables], relations, { isComponent: true });
 
   const componentsMap = modelsDefs
     .map((item) => JSON.parse(item.value))
