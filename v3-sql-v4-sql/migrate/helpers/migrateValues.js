@@ -1,10 +1,8 @@
-const { cloneDeepWith, camelCase, isObject, isString } = require("lodash");
+const { cloneDeepWith, camelCase, isObject} = require("lodash");
 
 function migrateUids(uid) {
-  if (!uid) {
-    return uid;
-  }
-  var result = uid;
+  if (!uid) return uid;
+  let result = uid;
   result = result.replace("strapi::", "admin::");
   result = result.replace("application::", "api::");
   result = result.replace(
