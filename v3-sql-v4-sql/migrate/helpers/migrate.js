@@ -115,8 +115,7 @@ async function migrate(source, destination, itemMapper = undefined) {
     console.log(`${source} batch #${page + 1}`);
     const items = await dbV3(source)
       .limit(BATCH_SIZE)
-      .offset(page * BATCH_SIZE)
-      .distinct();
+      .offset(page * BATCH_SIZE).orderBy('id', 'asc')
 
     const withParsedJsonFields = items.map((item) => {
       if (jsonFields.length > 0) {
@@ -139,9 +138,9 @@ async function migrate(source, destination, itemMapper = undefined) {
 
           console.log(
             "WARNING - items of " +
-              destination +
-              " was filtered " +
-              JSON.stringify(filteredColumns)
+            destination +
+            " was filtered " +
+            JSON.stringify(filteredColumns)
           );
         }
 
@@ -158,15 +157,23 @@ async function migrate(source, destination, itemMapper = undefined) {
 }
 
 async function resetTableSequence(destination) {
-  if (isPGSQL) {
-    const hasId = await dbV4.schema.hasColumn(destination, "id");
-    if (hasId) {
-      const seq = `${destination.slice(0, 56)}_id_seq`;
-      await dbV4.raw(
-        `SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM ${destination}))`
-      );
-    }
+  if (!isPGSQL) return
+  const hasId = await dbV4.schema.hasColumn(destination, "id");
+  if (!hasId) return
+  const seq = `${destination.slice(0, 56)}_id_seq`;
+  const maxResult = await dbV4.raw(
+    `SELECT MAX(id) FROM ${destination}`
+  );
+  const { max } = maxResult.rows[0]
+  const nextvalResult = await dbV4.raw(`SELECT nextVal('${seq}')`)
+  console.log('nextvalResult', nextvalResult)
+  const { nextval } = nextvalResult.rows[0]
+  if (nextval <= max) {
+    await dbV4.raw(
+      `SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM ${destination}))`
+    );
   }
+
 }
 
 module.exports = {
