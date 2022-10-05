@@ -132,9 +132,9 @@ async function migrate(source, destination, itemMapper = undefined) {
         const filteredItems = pick(item, tableColumns);
 
         if (Object.keys(item).length !== Object.keys(filteredItems).length) {
-          const filteredColumns = Object.keys(item).filter(function (obj) {
-            return Object.keys(filteredItems).indexOf(obj) == -1;
-          });
+          const filteredColumns = Object.keys(item).filter(
+            (obj) => Object.keys(filteredItems).indexOf(obj) === -1
+          );
 
           console.log(
             "WARNING - items of " +
