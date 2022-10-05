@@ -115,7 +115,8 @@ async function migrate(source, destination, itemMapper = undefined) {
     console.log(`${source} batch #${page + 1}`);
     const items = await dbV3(source)
       .limit(BATCH_SIZE)
-      .offset(page * BATCH_SIZE);
+      .offset(page * BATCH_SIZE)
+      .distinct();
 
     const withParsedJsonFields = items.map((item) => {
       if (jsonFields.length > 0) {
