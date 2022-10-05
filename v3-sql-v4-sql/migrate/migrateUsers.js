@@ -68,15 +68,31 @@ async function migrateUsersData() {
     const items = await dbV3(source)
       .limit(BATCH_SIZE)
       .offset(page * BATCH_SIZE);
-    const migratedItems = migrateItems(items, ({ role, ...item }) =>
+    const migratedItems = migrateItems(items, ({ role, country, genre, citizenship, ...item }) =>
       migrateItem(item)
     );
     const roleLinks = items.map((item) => ({
       user_id: item.id,
       role_id: item.role,
     }));
+    const up_users_country_links = items.map((item) => ({
+      user_id: item.id,
+      country_id: item.country,
+    }));
+    const up_users_genre_links = items.map((item) => ({
+      user_id: item.id,
+      genre_id: item.genre,
+    }));
+    const up_users_citizenship_links = items.map((item) => ({
+      user_id: item.id,
+      country_id: item.citizenship,
+    }));
+
     await dbV4(destination).insert(migratedItems);
     await dbV4(destinationLinks).insert(roleLinks);
+    await dbV4("up_users_country_links").insert(up_users_country_links);
+    await dbV4("up_users_genre_links").insert(up_users_genre_links);
+    await dbV4("up_users_citizenship_links").insert(up_users_citizenship_links);
   }
   await resetTableSequence(destination);
 }
