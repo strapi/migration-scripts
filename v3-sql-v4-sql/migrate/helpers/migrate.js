@@ -8,7 +8,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   if (isMYSQL) {
     const sourceNotExists = (await dbV3.raw(`SHOW TABLES LIKE '%${source}%';`))[0].length === 0;
     const destinationNotExists =
-      (await dbV4.raw(`SHOW TABLES LIKE '%${destination}%';`))[0].length === 0;
+      (await dbV4.raw(`SHOW TABLES LIKE "%${destination}%";`))[0].length === 0;
 
     if (sourceNotExists) {
       console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
@@ -155,7 +155,7 @@ async function resetTableSequence(destination) {
     const hasId = await dbV4.schema.hasColumn(destination, 'id');
     if (hasId) {
       const seq = `${destination.slice(0, 56)}_id_seq`;
-      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM '${destination}'))`);
+      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM "${destination}"))`);
     }
   }
 }
