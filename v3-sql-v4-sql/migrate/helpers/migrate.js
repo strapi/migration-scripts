@@ -8,7 +8,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   if (isMYSQL) {
     const sourceNotExists = (await dbV3.raw(`SHOW TABLES LIKE '%${source}%';`))[0].length === 0;
     const destinationNotExists =
-      (await dbV4.raw(`SHOW TABLES LIKE '%${destination}%';`))[0].length === 0;
+      (await dbV4.raw(`SHOW TABLES LIKE "%${destination}%";`))[0].length === 0;
 
     if (sourceNotExists) {
       console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
