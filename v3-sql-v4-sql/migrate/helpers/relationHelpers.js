@@ -76,9 +76,12 @@ function oneToOneRelationMapper(relation, item) {
   const idF = item[relation.attribute];
 
   if (id && idF) {
+    const keyF = relation.entityName === relation.modelF
+      ? `inv_${makeRelationModelId(relation.modelF)}`
+      : makeRelationModelId(relation.modelF);
     return {
       [makeRelationModelId(relation.entityName)]: id,
-      [makeRelationModelId(relation.modelF)]: idF,
+      [keyF]: idF,
     };
   }
   return undefined;
