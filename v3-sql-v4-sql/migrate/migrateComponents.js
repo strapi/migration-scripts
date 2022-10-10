@@ -87,6 +87,7 @@ async function migrateTables(tables) {
             value,
             collectionName: componentDefinitionObject.collectionName,
             uid: componentDefinitionObject.uid,
+            isComponent: true
           },
           relations
         );
@@ -102,7 +103,7 @@ async function migrateTables(tables) {
     processedTables.push(table);
   }
 
-  await migrateRelations([...componentsToMigrate, ...tables], relations, { isComponent: true });
+  await migrateRelations([...componentsToMigrate, ...tables], relations);
 
   const componentsMap = modelsDefs
     .map((item) => JSON.parse(item.value))

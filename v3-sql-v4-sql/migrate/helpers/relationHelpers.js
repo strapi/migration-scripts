@@ -7,7 +7,7 @@ const { omit } = require('lodash');
 const { singular } = pluralize;
 
 function addRelation(
-  { uid, model, attribute, type, modelF = undefined, attributeF = undefined },
+  { uid, model, attribute, type, modelF = undefined, attributeF = undefined, isComponent = false },
   relations
 ) {
   const entitUid = uid.split('.');
@@ -22,10 +22,11 @@ function addRelation(
     attributeF,
     table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
+    isComponent
   });
 }
 
-function processRelation({ key, value, collectionName, uid }, relations) {
+function processRelation({ key, value, collectionName, uid, isComponent }, relations) {
   if (value.model) {
     addRelation(
       {
@@ -35,6 +36,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
         type: 'oneToOne',
         modelF: value.model,
         attributeF: value.via,
+        isComponent
       },
       relations
     );
@@ -48,6 +50,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           type: 'manyToMany',
           modelF: value.collection,
           attributeF: value.attribute,
+          isComponent
         },
         relations
       );
@@ -60,6 +63,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           type: 'oneToMany',
           modelF: snakeCase(value.collection),
           attributeF: value.via,
+          isComponent
         },
         relations
       );
@@ -74,13 +78,13 @@ function makeRelationModelId(model, options = {}) {
   return `${snakeCase(pluralize(model, 1))}_id`;
 }
 
-function oneToOneRelationMapper(relation, item, options = {}) {
+function oneToOneRelationMapper(relation, item) {
   const id = item.id;
   const idF = item[relation.attribute];
 
   if (id && idF) {
     return {
-      [makeRelationModelId(relation.entityName, options)]: id,
+      [makeRelationModelId(relation.entityName, { isComponent: relation.isComponent })]: id,
       [makeRelationModelId(relation.modelF)]: idF,
     };
   }
@@ -99,13 +103,13 @@ function oneToOneCirvleRelationMapper(relation, item) {
   return undefined;
 }
 
-async function migrateOneToOneRelation(relation, options = {}) {
+async function migrateOneToOneRelation(relation) {
   if (singular(relation.model) === singular(relation.modelF)) {
     await migrate(relation.model, relation.table, (item) =>
       oneToOneCirvleRelationMapper(relation, item)
     );
   } else {
-    await migrate(relation.model, relation.table, (item) => oneToOneRelationMapper(relation, item, options));
+    await migrate(relation.model, relation.table, (item) => oneToOneRelationMapper(relation, item));
   }
 }
 
@@ -134,7 +138,7 @@ async function migrateManyToManyRelation(relation, sourceTable) {
   }
 }
 
-async function migrateRelations(tables, relations, options = {}) {
+async function migrateRelations(tables, relations) {
   let v4Tables = [];
 
   if (isPGSQL) {
@@ -161,7 +165,7 @@ async function migrateRelations(tables, relations, options = {}) {
 
   for (const relation of relations) {
     if (relation.type === 'oneToOne') {
-      await migrateOneToOneRelation(relation, options);
+      await migrateOneToOneRelation(relation);
     } else if (relation.type === 'manyToMany') {
       var sourceTable = v3RelationTables.find(
         (t) =>
