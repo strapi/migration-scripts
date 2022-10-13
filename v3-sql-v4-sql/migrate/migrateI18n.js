@@ -4,7 +4,7 @@ async function migrateTables() {
   console.log('Migrate locales (i18n)');
 
   const source = 'i18n_locales';
-  const destination = 'i18n_locale';
+  const destination = 'i18n_locales';
 
   await migrate(source, destination);
 }
