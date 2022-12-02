@@ -276,7 +276,7 @@ async function run() {
 
             if (isManyWay) {
               const joinTableName =
-                attribute.collectionName || `${model.collectionName}__${_.snakeCase(key)}`;
+                attribute.collection || `${model.collectionName}__${_.snakeCase(key)}`;
 
               const fk = `${singular(model.collectionName)}_id`;
               let otherFk = `${singular(attribute.collection)}_id`;
