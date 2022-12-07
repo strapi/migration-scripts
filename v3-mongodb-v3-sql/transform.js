@@ -36,7 +36,7 @@ function transformEntry(entry, model) {
     res.updated_at = entry[updatedAtKey];
   }
 
-  Object.keys(entry).forEach((key) => {
+  Object.keys(model.attributes).forEach((key) => {
     const attribute = model.attributes[key];
 
     if (!attribute) {
@@ -44,6 +44,12 @@ function transformEntry(entry, model) {
     }
 
     if (isScalar(attribute)) {
+      if(!Object.keys(entry).includes(key)) {//handle undefined attribute in entry w/ default value
+        if (attribute.default && attribute.type === 'json') res[key] = JSON.stringify(attribute.default);
+        else if (attribute.default) res[key] = attribute.default;
+        return;
+      }
+
       if (attribute.type === 'json') {
         res[key] = JSON.stringify(entry[key]);
         return;
