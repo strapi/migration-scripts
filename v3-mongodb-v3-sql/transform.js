@@ -36,13 +36,7 @@ function transformEntry(entry, model) {
     res.updated_at = entry[updatedAtKey];
   }
 
-  Object.keys(model.attributes).forEach((key) => {
-    const attribute = model.attributes[key];
-
-    if (!attribute) {
-      return;
-    }
-
+  Object.entries(model.attributes).forEach(([key, attribute]) => {
     if (isScalar(attribute)) {
       if(!Object.keys(entry).includes(key)) {//handle undefined attribute in entry w/ default value
         if (attribute.default && attribute.type === 'json') res[key] = JSON.stringify(attribute.default);

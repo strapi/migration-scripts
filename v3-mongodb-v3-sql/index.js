@@ -333,9 +333,8 @@ async function run() {
       }
 
       await cursor.close();
-
-      await dialect.afterMigration?.(knex);
     }
+    await dialect.afterMigration?.(knex);
   } finally {
     await mongo.close();
     await knex.destroy();
