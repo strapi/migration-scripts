@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const logger = require('../logger');
 const _ = require('lodash');
 const pluralize = require('pluralize');
 const { singular } = pluralize;
@@ -91,9 +92,11 @@ async function getModelDefs(db) {
 
 async function run() {
   try {
+    logger.info("Connecting to MongoDB...")
     await mongo.connect();
-
+    
     const db = mongo.db();
+    logger.info("Connected! Fetching model definitions...")
 
     const models = await getModelDefs(db);
 
@@ -102,14 +105,17 @@ async function run() {
       return acc;
     }, {});
 
+    logger.info("Models fetched successfully. Executing pre-migration steps...")
     const dialect = require(`./dialects/${knex.client.config.client}`)(knex, inspector);
     await dialect.delAllTables(knex);
     await dialect.beforeMigration?.(knex);
+    logger.info("Pre-migration steps complete")
 
     // 1st pass: for each document create a new row and store id in a map
+    logger.info("First Pass - Creating rows and mapping IDs to indexes...")
     for (const model of models) {
       const cursor = db.collection(model.collectionName).find();
-
+      logger.verbose(`Processing collection ${model.collectionName}`)
       while (await cursor.hasNext()) {
         const entry = await cursor.next();
         const row = transformEntry(entry, model);
@@ -122,14 +128,15 @@ async function run() {
       await cursor.close();
     }
 
+    logger.info("Second Pass - Rows created and IDs mapped. Linking components & relations with tables...")
     // 2nd pass: for each document's components & relations create the links in the right tables
 
     for (const model of models) {
       const cursor = db.collection(model.collectionName).find();
-
+      logger.verbose(`Processing collection ${model.collectionName}`)
       while (await cursor.hasNext()) {
         const entry = await cursor.next();
-
+        
         for (const key of Object.keys(entry)) {
           const attribute = model.attributes[key];
 
@@ -154,6 +161,7 @@ async function run() {
             });
 
             if (rows.length > 0) {
+              logger.debug(`Filling component ${key} joining table - ${JSON.stringify(rows)}`)
               await knex(linkTableName).insert(rows);
             }
 
@@ -161,6 +169,7 @@ async function run() {
           }
 
           if (attribute.type === 'dynamiczone') {
+            
             // create compo links
             const linkTableName = `${model.collectionName}_components`;
 
@@ -178,6 +187,7 @@ async function run() {
             });
 
             if (rows.length > 0) {
+              logger.debug(`Filling dynamiczone ${key} joining table - ${JSON.stringify(rows)}`)
               await knex(linkTableName).insert(rows);
             }
 
@@ -196,7 +206,7 @@ async function run() {
               field: key,
               order: 1,
             };
-
+            logger.debug(`Linking single file - ${key} - ${JSON.stringify(row)}`)
             await knex('upload_file_morph').insert(row);
           }
 
@@ -210,20 +220,21 @@ async function run() {
             }));
 
             if (rows.length > 0) {
+              logger.debug(`Linking multiple files - ${key} - ${JSON.stringify(rows)}`)
               await knex('upload_file_morph').insert(rows);
             }
           }
 
           if (attribute.model || attribute.collection) {
             // create relation links
-
+            
             const targetModel = models.find((m) => {
               return (
                 [attribute.model, attribute.collection].includes(m.modelName) &&
                 (!attribute.plugin || (attribute.plugin && attribute.plugin === m.plugin))
               );
             });
-
+            
             const targetAttribute = targetModel?.attributes?.[attribute.via];
 
             const isOneWay = attribute.model && !attribute.via && attribute.model !== '*';
@@ -253,6 +264,7 @@ async function run() {
               targetAttribute?.collection &&
               targetAttribute?.collection !== '*';
 
+              
             if (isOneWay || isOneToOne || isManyToOne) {
               // TODO: optimize with one updata at the end
 
@@ -335,12 +347,17 @@ async function run() {
       await cursor.close();
     }
     await dialect.afterMigration?.(knex);
-  } finally {
+    logger.info("Post-migration steps complete.")
+  }
+  catch(err){
+    logger.error(err)
+  } 
+  finally {
+    logger.info("Cleaning Up...")
     await mongo.close();
     await knex.destroy();
   }
-
-  console.log('Done');
+  logger.info('Migration Complete');
 }
 
-run().catch(console.dir);
+run()
