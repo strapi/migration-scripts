@@ -79,6 +79,11 @@ async function migrateUsersData() {
 }
 
 async function migrateTables() {
+  if (process.env.DISABLE_UP_MIGRATION === 'true') {
+    console.log('UP MIGRATIONS WERE SKIPPED DUE TO DISABLING IT IN CONFIG');
+    return false;
+  }
+
   console.log('Migrating Users');
   await migrate('users-permissions_role', 'up_roles');
   await migrateUserPermissions();
