@@ -226,7 +226,7 @@ async function run() {
 
             const targetAttribute = targetModel?.attributes?.[attribute.via];
 
-            const isOneWay = attribute.model && !attribute.via && attribute.moel !== '*';
+            const isOneWay = attribute.model && !attribute.via && attribute.model !== '*';
             const isOneToOne =
               attribute.model &&
               attribute.via &&
