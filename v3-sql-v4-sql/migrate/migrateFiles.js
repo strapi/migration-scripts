@@ -51,7 +51,7 @@ async function migrateTables() {
     const newItem = {
       ...item,
       file_id: item.upload_file_id,
-      related_type: componentsMap[item.related_type] || related_type,
+      related_type: componentsMap[item.related_type] || item.related_type,
     };
 
     return omit(newItem, ['upload_file_id', 'id']);
