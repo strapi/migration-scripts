@@ -7,7 +7,7 @@ const { omit } = require('lodash');
 const { singular } = pluralize;
 
 function addRelation(
-  { uid, model, attribute, type, modelF = undefined, attributeF = undefined },
+  { uid, model, attribute, type, modelF = undefined, attributeF = undefined, isComponent = false },
   relations
 ) {
   const entitUid = uid.split('.');
@@ -22,10 +22,11 @@ function addRelation(
     attributeF,
     table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
+    isComponent
   });
 }
 
-function processRelation({ key, value, collectionName, uid }, relations) {
+function processRelation({ key, value, collectionName, uid, isComponent }, relations) {
   if (value.model) {
     addRelation(
       {
@@ -35,6 +36,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
         type: 'oneToOne',
         modelF: value.model,
         attributeF: value.via,
+        isComponent
       },
       relations
     );
@@ -48,6 +50,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           type: 'manyToMany',
           modelF: value.collection,
           attributeF: value.attribute,
+          isComponent
         },
         relations
       );
@@ -60,6 +63,7 @@ function processRelation({ key, value, collectionName, uid }, relations) {
           type: 'oneToMany',
           modelF: snakeCase(value.collection),
           attributeF: value.via,
+          isComponent
         },
         relations
       );
@@ -67,7 +71,10 @@ function processRelation({ key, value, collectionName, uid }, relations) {
   }
 }
 
-function makeRelationModelId(model) {
+function makeRelationModelId(model, options = {}) {
+  if (options.isComponent) {
+    return `${snakeCase(model)}_id`;
+  }
   return `${snakeCase(pluralize(model, 1))}_id`;
 }
 
@@ -80,8 +87,8 @@ function oneToOneRelationMapper(relation, item) {
       ? `inv_${makeRelationModelId(relation.modelF)}`
       : makeRelationModelId(relation.modelF);
     return {
-      [makeRelationModelId(relation.entityName)]: id,
-      [keyF]: idF,
+      [makeRelationModelId(relation.entityName, { isComponent: relation.isComponent })]: id,
+      [makeRelationModelId(relation.modelF)]: idF,
     };
   }
   return undefined;

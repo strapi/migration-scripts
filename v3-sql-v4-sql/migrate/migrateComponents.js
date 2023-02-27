@@ -87,6 +87,7 @@ async function migrateTables(tables) {
             value,
             collectionName: componentDefinitionObject.collectionName,
             uid: componentDefinitionObject.uid,
+            isComponent: true
           },
           relations
         );
