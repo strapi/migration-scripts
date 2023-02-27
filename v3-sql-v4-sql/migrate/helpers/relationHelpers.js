@@ -155,7 +155,14 @@ async function migrateRelations(tables, relations) {
     );
   }
 
-  relations = relations.filter((r) => v4Tables.includes(r.table));
+  const mappedRelations = relations.map((r) => {
+    if (r.table.startsWith('users_permissions_user') && r.table.endsWith('_links')) {
+      return { ...r, table: r.table.replace('users_permissions_user', 'up_users') };
+    }
+    return r;
+  });
+
+  relations = mappedRelations.filter((r) => v4Tables.includes(r.table));
 
   const v3RelationTables = tables.filter((t) => t.includes('__'));
 
