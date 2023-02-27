@@ -8,7 +8,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   if (isMYSQL) {
     const sourceNotExists = (await dbV3.raw(`SHOW TABLES LIKE '%${source}%';`))[0].length === 0;
     const destinationNotExists =
-      (await dbV4.raw(`SHOW TABLES LIKE '%${destination}%';`))[0].length === 0;
+      (await dbV4.raw(`SHOW TABLES LIKE "%${destination}%";`))[0].length === 0;
 
     if (sourceNotExists) {
       console.log(`SOURCE TABLE ${source} DOES NOT EXISTS`);
@@ -90,7 +90,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   const count =
     (await dbV3(resolveSourceTableName(source)).count().first()).count ||
     (await dbV3(resolveSourceTableName(source)).count().first())['count(*)'];
-  const columnsInfo = await dbV3(resolveSourceTableName(source)).columnInfo();
+  const columnsInfo = await dbV3(source).withSchema(process.env.DATABASE_V3_SCHEMA).columnInfo();
 
   const jsonFields = Object.keys(columnsInfo).filter((column) => {
     return columnsInfo[column].type === 'jsonb';
@@ -99,7 +99,7 @@ async function migrate(source, destination, itemMapper = undefined) {
   console.log(`Migrating ${count} items from ${source} to ${destination}`);
   await dbV4(resolveDestTableName(destination)).del();
 
-  let tableColumnsInfo = await dbV4(destination).columnInfo();
+  let tableColumnsInfo = await dbV4(destination).withSchema(process.env.DATABASE_V4_SCHEMA).columnInfo();
 
   if (isPGSQL) {
     // https://github.com/knex/knex/issues/1490
@@ -155,7 +155,7 @@ async function resetTableSequence(destination) {
     const hasId = await dbV4.schema.hasColumn(destination, 'id');
     if (hasId) {
       const seq = `${destination.slice(0, 56)}_id_seq`;
-      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM '${destination}'))`);
+      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM "${destination}"))`);
     }
   }
 }

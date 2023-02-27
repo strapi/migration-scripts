@@ -23,6 +23,35 @@ yarn
 2. Copy the corresponding `.env.DBTYPE.example` file to `.env` using something like `cp .env.pg.example .env`
 3. Modify the configuration in the `.env` to match your v3 source and your v4 target databases
 
+There are several required configuration variables that can be set via environment variables or via the `.env` file.
+
+| Variable               | Description                                             | Database Client | Default          | Required |
+| ---------------------- | ------------------------------------------------------- | --------------- | ---------------- | -------- |
+| `DATABASE_CLIENT`      | The database client to use (`sqlite`, `pg`, or `mysql`) | All             | none             | yes      |
+| `BATCH_SIZE`           | The number of records to process at a time              | All             | 50               | yes      |
+| `DATABASE_V3_PATH`     | The path to the v3 database SQLite3 file                | `sqlite`        | none             | yes      |
+| `DATABASE_V4_PATH`     | The path to the v4 database SQLite3 file                | `sqlite`        | none             | yes      |
+| `DATABASE_V3_HOST`     | The host of the v3 database                             | `pg` or `mysql` | `127.0.0.1`      | yes      |
+| `DATABASE_V3_PORT`     | The port of the v3 database                             | `pg` or `mysql` | `5432` or `3306` | yes      |
+| `DATABASE_V3_DATABASE` | The name of the v3 database                             | `pg` or `mysql` | `strapiv3`       | yes      |
+| `DATABASE_V3_USER`     | The user of the v3 database                             | `pg` or `mysql` | `strapiUser`     | yes      |
+| `DATABASE_V3_PASSWORD` | The password of the v3 database                         | `pg` or `mysql` | `strapiPassword` | yes      |
+| `DATABASE_V3_SCHEMA`   | The schema of the v3 database                           | `pg`            | `public`         | no       |
+| `DATABASE_V4_HOST`     | The host of the v4 database                             | `pg` or `mysql` | `127.0.0.1`      | yes      |
+| `DATABASE_V4_PORT`     | The port of the v4 database                             | `pg` or `mysql` | `5432` or `3306` | yes      |
+| `DATABASE_V4_DATABASE` | The name of the v4 database                             | `pg` or `mysql` | `strapiv4`       | yes      |
+| `DATABASE_V4_USER`     | The user of the v4 database                             | `pg` or `mysql` | `strapiUser`     | yes      |
+| `DATABASE_V4_PASSWORD` | The password of the v4 database                         | `pg` or `mysql` | `strapiPassword` | yes      |
+| `DATABASE_V4_SCHEMA`   | The schema of the v4 database                           | `pg`            | `public`         | no       |
+
+### Optional Configuration
+
+There are a few optional configuration options that can be set in the via environment variables or via the `.env` file.
+
+| Variable               | Description                                  | Default |
+| ---------------------- | -------------------------------------------- | ------- |
+| `DISABLE_UP_MIGRATION` | Disable migrating the users-permissions data | `true`  |
+
 ## Migration
 
 1. Migrate your Strapi Code before running this script, see the following [documentation](https://docs.strapi.io/developer-docs/latest/update-migration-guides/migration-guides/v4/code-migration.html)

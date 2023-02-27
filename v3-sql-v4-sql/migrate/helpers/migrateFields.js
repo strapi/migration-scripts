@@ -1,5 +1,12 @@
 const { snakeCase } = require('lodash/fp');
 
+function fixColumnNameInLocalizationsTable(fieldName) {
+  if (fieldName.includes('-') && !fieldName.includes('related_')) {
+    return 'inv_' + snakeCase(fieldName);
+  }
+  return snakeCase(fieldName).replace(/^related_(.*)?$/, 'inv_$1');
+}
+
 function migrateField(fieldName) {
   switch (fieldName) {
     case 'created_by':
@@ -7,7 +14,7 @@ function migrateField(fieldName) {
     case 'updated_by':
       return 'updated_by_id';
     default:
-      return snakeCase(fieldName).replace(/^related_(.*)?$/, 'inv_$1');
+      return fixColumnNameInLocalizationsTable(fieldName);
   }
 }
 
