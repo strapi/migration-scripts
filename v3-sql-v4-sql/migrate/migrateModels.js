@@ -38,7 +38,7 @@ async function migrateModels(tables) {
         omitAttributes.push(key);
       }
     }
-    await migrate(modelDef.collectionName, modelDef.collectionName, (item) => {
+    await migrate(modelDef.collectionName, modelDef.collectionName.toLowerCase(), (item) => {
       if (modelDef.options.timestamps === false) {
         return migrateItem(item);
       } else {
