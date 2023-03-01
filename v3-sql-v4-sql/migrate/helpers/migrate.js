@@ -1,7 +1,7 @@
 const { dbV3, dbV4, isPGSQL, isMYSQL, isSQLITE } = require('../../config/database');
 const { BATCH_SIZE } = require('./constants');
 const { migrateItems } = require('./migrateFields');
-const { pick } = require('lodash');
+const { pick, isEmpty } = require('lodash');
 const { resolveDestTableName, resolveSourceTableName } = require('./tableNameHelpers');
 
 async function migrate(source, destination, itemMapper = undefined) {
@@ -128,6 +128,10 @@ async function migrate(source, destination, itemMapper = undefined) {
 
     const migratedItems = migrateItems(withParsedJsonFields, itemMapper).map((item) => {
       const filteredItems = pick(item, tableColumns);
+      if (isEmpty(filteredItems)) {
+        console.log(`WARNING - parsed json field ${JSON.stringify(item)} of ${destination} not found in table columns ${JSON.stringify(tableColumns)}`)
+        return null;
+      }
 
       if (Object.keys(item).length !== Object.keys(filteredItems).length) {
         const filteredColumns = Object.keys(item).filter(function (obj) {
@@ -140,7 +144,7 @@ async function migrate(source, destination, itemMapper = undefined) {
       }
 
       return filteredItems;
-    });
+    }).filter(Boolean);
 
     if (migratedItems.length > 0) {
       await dbV4(resolveDestTableName(destination)).insert(migratedItems);
@@ -155,7 +159,7 @@ async function resetTableSequence(destination) {
     const hasId = await dbV4.schema.hasColumn(destination, 'id');
     if (hasId) {
       const seq = `${destination.slice(0, 56)}_id_seq`;
-      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM "${destination}"))`);
+      await dbV4.raw(`SELECT SETVAL ('"${seq}"', (SELECT MAX(id) + 1 FROM "${destination}"))`);
     }
   }
 }
