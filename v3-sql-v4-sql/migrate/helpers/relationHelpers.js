@@ -177,16 +177,19 @@ async function migrateRelations(tables, relations) {
     if (relation.type === 'oneToOne') {
       await migrateOneToOneRelation(relation);
     } else if (relation.type === 'manyToMany') {
+      const modelF = relation.modelF.replace("-", "_");
+      const attribute = snakeCase(relation.attribute);
       var sourceTable = v3RelationTables.find(
         (t) =>
-          t === `${relation.model}__${relation.attribute}` ||
-          t.startsWith(`${relation.model}_${relation.attribute}__${relation.modelF}`) ||
-          (t.startsWith(`${relation.modelF}`) &&
-            t.endsWith(`__${relation.model}_${relation.attribute}`))
+          t === `${relation.model}__${attribute}` ||
+          t.startsWith(`${relation.model}_${attribute}__${modelF}`) ||
+          (t.startsWith(`${modelF}`) && t.endsWith(`__${relation.model}_${attribute}`))
       );
 
       if (sourceTable) {
         await migrateManyToManyRelation(relation, sourceTable);
+      } else {
+        console.log(`WARNING - unable to idenitfy source table for relation: ` + relation.table);
       }
     }
   }
