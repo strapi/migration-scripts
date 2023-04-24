@@ -1,4 +1,4 @@
-const { dbV3, dbV4 } = require('../config/database');
+const { dbV3, dbV4, isPGSQL } = require('../config/database');
 const { BATCH_SIZE } = require('./helpers/constants');
 const { migrate, resetTableSequence } = require('./helpers/migrate');
 const { migrateItems, migrateItem } = require('./helpers/migrateFields');
@@ -34,10 +34,20 @@ async function migrateUserPermissions() {
   await dbV4(resolveDestTableName(destination)).del();
   for (var page = 0; page * BATCH_SIZE < count; page++) {
     console.log(`${source} batch #${page + 1}`);
-    const items = await sourceSelect
-      .clone()
-      .limit(BATCH_SIZE)
-      .offset(page * BATCH_SIZE);
+    let items;
+
+    if (isPGSQL) {
+      items = await sourceSelect
+        .clone()
+        .limit(BATCH_SIZE)
+        .offset(page * BATCH_SIZE)
+        .orderBy('id', 'asc');
+    } else {
+      items = await sourceSelect
+        .clone()
+        .limit(BATCH_SIZE)
+        .offset(page * BATCH_SIZE);
+    }
 
     const migratedItems = migrateItems(
       items,
@@ -100,9 +110,19 @@ async function migrateUsersData() {
   await dbV4(resolveDestTableName(destination)).del();
   for (var page = 0; page * BATCH_SIZE < count; page++) {
     console.log(`${source} batch #${page + 1}`);
-    const items = await dbV3(resolveSourceTableName(source))
-      .limit(BATCH_SIZE)
-      .offset(page * BATCH_SIZE);
+    let items;
+
+    if (isPGSQL) {
+      items = await dbV3(resolveSourceTableName(source))
+        .limit(BATCH_SIZE)
+        .offset(page * BATCH_SIZE)
+        .orderBy('id', 'asc');
+    } else {
+      items = await dbV3(resolveSourceTableName(source))
+        .limit(BATCH_SIZE)
+        .offset(page * BATCH_SIZE);
+    }
+
     const migratedItems = migrateItems(items, ({ role, ...item }) =>
       migrateItem(omit(item, omitAttributes))
     );
