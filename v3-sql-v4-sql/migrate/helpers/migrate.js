@@ -99,7 +99,9 @@ async function migrate(source, destination, itemMapper = undefined) {
   console.log(`Migrating ${count} items from ${source} to ${destination}`);
   await dbV4(resolveDestTableName(destination)).del();
 
-  let tableColumnsInfo = await dbV4(destination).withSchema(process.env.DATABASE_V4_SCHEMA).columnInfo();
+  let tableColumnsInfo = await dbV4(destination)
+    .withSchema(process.env.DATABASE_V4_SCHEMA)
+    .columnInfo();
 
   if (isPGSQL) {
     // https://github.com/knex/knex/issues/1490
@@ -161,10 +163,13 @@ async function migrate(source, destination, itemMapper = undefined) {
 
 async function resetTableSequence(destination) {
   if (isPGSQL) {
-    const hasId = await dbV4.schema.hasColumn(destination, 'id');
+    const schema = process.env.DATABASE_V4_SCHEMA ?? 'public';
+    const hasId = await dbV4.schema.withSchema(schema).hasColumn(destination, 'id');
     if (hasId) {
       const seq = `${destination.slice(0, 56)}_id_seq`;
-      await dbV4.raw(`SELECT SETVAL ('${seq}', (SELECT MAX(id) + 1 FROM "${destination}"))`);
+      await dbV4.raw(
+        `SELECT SETVAL ('${schema}.${seq}', (SELECT MAX(id) + 1 FROM ${schema}."${destination}"))`
+      );
     }
   }
 }
