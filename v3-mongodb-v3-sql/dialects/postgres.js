@@ -22,8 +22,9 @@ module.exports = (knex, inspector) => ({
       let result = await knex.raw('select max(id) from ??', [table]);
       const max = result.rows[0].max;
 
+      const nextVal =`${table.slice(0, 56)}_id_seq`; 
       if (max) {
-        await knex.raw(`ALTER SEQUENCE ?? RESTART WITH ??;`, [table + '_id_seq', max + 1]);
+        await knex.raw('ALTER SEQUENCE ?? RESTART WITH ??;', [nextVal, max + 1]);
       }
     }
   },
