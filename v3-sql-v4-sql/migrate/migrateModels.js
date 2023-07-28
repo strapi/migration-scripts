@@ -42,23 +42,14 @@ async function migrateModels(tables) {
       if (modelDef.options.timestamps === false) {
         return migrateItem(item);
       } else {
-        const timestamps =
-          modelDef.options.timestamps === true
-            ? ['created_at', 'updated_at']
-            : modelDef.options.timestamps;
-        const [createdAt, updatedAt] = timestamps;
-
+        // v3-mongo->v3-sql already rename them to these snake case, but kept the customized field, then in v4-sql custom createdAt will be covered.
         const newItem = {
           ...item,
-          created_at: item[createdAt],
-          updated_at: item[updatedAt],
+          created_at: item['created_at'],
+          updated_at: item['updated_at'],
         };
 
-        let omitFields = [...omitAttributes];
-        if (createdAt != 'created_at') omitFields.push(createdAt);
-        if (updatedAt != 'updated_at') omitFields.push(updatedAt);
-
-        return migrateItem(omit(newItem, omitFields));
+        return migrateItem(omit(newItem, omitAttributes));
       }
     });
   }
