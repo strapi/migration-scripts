@@ -45,14 +45,14 @@ async function migrateTables() {
         .replace(/"mainField":"type"/g, `"mainField":"action"`);
       const value = migrateItemValues(JSON.parse(replacedValue));
 
-      if (value.layouts) {
+      if (value?.layouts) {
         value.layouts.list = value.layouts.list.map((item) => camelCase(item));
         value.layouts.edit = value.layouts.edit.map((row) =>
           row.map((column) => ({ ...column, name: camelCase(column.name) }))
         );
       }
 
-      const valueToSave = value.metadatas
+      const valueToSave = value?.metadatas
         ? {
             ...value,
             metadatas: mapKeys(
