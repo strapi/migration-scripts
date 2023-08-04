@@ -22,7 +22,7 @@ function addRelation(
     attributeF,
     table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
-    isComponent
+    isComponent,
   });
 }
 
@@ -36,7 +36,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
         type: 'oneToOne',
         modelF: value.model,
         attributeF: value.via,
-        isComponent
+        isComponent,
       },
       relations
     );
@@ -50,7 +50,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
           type: 'manyToMany',
           modelF: value.collection,
           attributeF: value.attribute,
-          isComponent
+          isComponent,
         },
         relations
       );
@@ -63,7 +63,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
           type: 'oneToMany',
           modelF: snakeCase(value.collection),
           attributeF: value.via,
-          isComponent
+          isComponent,
         },
         relations
       );
@@ -83,9 +83,10 @@ function oneToOneRelationMapper(relation, item) {
   const idF = item[relation.attribute];
 
   if (id && idF) {
-    const keyF = relation.entityName === relation.modelF
-      ? `inv_${makeRelationModelId(relation.modelF)}`
-      : makeRelationModelId(relation.modelF);
+    const keyF =
+      relation.entityName === relation.modelF
+        ? `inv_${makeRelationModelId(relation.modelF)}`
+        : makeRelationModelId(relation.modelF);
     return {
       [makeRelationModelId(relation.entityName, { isComponent: relation.isComponent })]: id,
       [makeRelationModelId(relation.modelF)]: idF,
@@ -126,18 +127,22 @@ async function migrateManyToManyRelation(relation, sourceTable) {
     const fromModelRelation = makeRelationModelId(relation.model);
     const fromNameRelation = makeRelationModelId(relation.entityName);
 
-    await migrate(sourceTable, relation.table, ({ id, ...item }) => {
-      if (fromModelRelation === fromNameRelation) {
-        return migrateItem(item);
-      }
+    try {
+      await migrate(sourceTable, relation.table, ({ id, ...item }) => {
+        if (fromModelRelation === fromNameRelation) {
+          return migrateItem(item);
+        }
 
-      const newRelationObject = {
-        ...item,
-        [fromNameRelation]: item[fromModelRelation],
-      };
+        const newRelationObject = {
+          ...item,
+          [fromNameRelation]: item[fromModelRelation],
+        };
 
-      return migrateItem(omit(newRelationObject, [fromModelRelation]));
-    });
+        return migrateItem(omit(newRelationObject, [fromModelRelation]));
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
 
