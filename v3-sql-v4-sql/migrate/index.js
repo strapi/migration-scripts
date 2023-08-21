@@ -70,7 +70,10 @@ async function migrate() {
 
   processedTables.push(...migrateComponents.processedTables);
 
-  await migrateModels(tables.filter((table) => !processedTables.includes(table)));
+  await migrateModels(
+    tables.filter((table) => !processedTables.includes(table)),
+    processedTables
+  );
 
   if (isPGSQL) {
     await dbV4.raw('set session_replication_role to DEFAULT;');

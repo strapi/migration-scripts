@@ -9,7 +9,7 @@ const { resolveSourceTableName } = require('./helpers/tableNameHelpers');
 var relations = [];
 const skipAttributes = ['created_by', 'updated_by'];
 
-async function migrateModels(tables) {
+async function migrateModels(tables, processedTables) {
   console.log('Migrating Models');
   const modelsDefs = await dbV3(resolveSourceTableName('core_store')).where(
     'key',
@@ -53,7 +53,7 @@ async function migrateModels(tables) {
       }
     });
   }
-  await migrateRelations(tables, relations);
+  await migrateRelations(tables, relations, processedTables);
 }
 
 module.exports = {

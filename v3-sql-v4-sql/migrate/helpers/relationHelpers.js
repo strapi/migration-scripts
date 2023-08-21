@@ -22,7 +22,7 @@ function addRelation(
     attributeF,
     table: `${snakeCase(model)}_${snakeCase(attribute)}_links`,
     entityName,
-    isComponent
+    isComponent,
   });
 }
 
@@ -36,7 +36,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
         type: 'oneToOne',
         modelF: value.model,
         attributeF: value.via,
-        isComponent
+        isComponent,
       },
       relations
     );
@@ -50,7 +50,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
           type: 'manyToMany',
           modelF: value.collection,
           attributeF: value.attribute,
-          isComponent
+          isComponent,
         },
         relations
       );
@@ -63,7 +63,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
           type: 'oneToMany',
           modelF: snakeCase(value.collection),
           attributeF: value.via,
-          isComponent
+          isComponent,
         },
         relations
       );
@@ -83,9 +83,10 @@ function oneToOneRelationMapper(relation, item) {
   const idF = item[relation.attribute];
 
   if (id && idF) {
-    const keyF = relation.entityName === relation.modelF
-      ? `inv_${makeRelationModelId(relation.modelF)}`
-      : makeRelationModelId(relation.modelF);
+    const keyF =
+      relation.entityName === relation.modelF
+        ? `inv_${makeRelationModelId(relation.modelF)}`
+        : makeRelationModelId(relation.modelF);
     return {
       [makeRelationModelId(relation.entityName, { isComponent: relation.isComponent })]: id,
       [makeRelationModelId(relation.modelF)]: idF,
@@ -141,7 +142,7 @@ async function migrateManyToManyRelation(relation, sourceTable) {
   }
 }
 
-async function migrateRelations(tables, relations) {
+async function migrateRelations(tables, relations, processedTables = []) {
   let v4Tables = [];
 
   if (isPGSQL) {
@@ -174,6 +175,9 @@ async function migrateRelations(tables, relations) {
   const v3RelationTables = tables.filter((t) => t.includes('__'));
 
   for (const relation of relations) {
+    if (processedTables.includes(relation.table)) {
+      continue;
+    }
     if (relation.type === 'oneToOne') {
       await migrateOneToOneRelation(relation);
     } else if (relation.type === 'manyToMany') {
