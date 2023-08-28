@@ -88,7 +88,7 @@ function oneToOneRelationMapper(relation, item) {
       : makeRelationModelId(relation.modelF);
     return {
       [makeRelationModelId(relation.entityName, { isComponent: relation.isComponent })]: id,
-      [makeRelationModelId(relation.modelF)]: idF,
+      [keyF]: idF,
     };
   }
   return undefined;
