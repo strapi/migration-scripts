@@ -2,7 +2,7 @@ const { snakeCase } = require('lodash/fp');
 
 function fixColumnNameInLocalizationsTable(fieldName) {
   if (fieldName.includes('-') && !fieldName.includes('related_')) {
-    return 'inv_' + snakeCase(fieldName);
+    return snakeCase(fieldName);
   }
   return snakeCase(fieldName).replace(/^related_(.*)?$/, 'inv_$1');
 }
