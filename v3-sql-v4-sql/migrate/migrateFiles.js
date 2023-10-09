@@ -35,6 +35,7 @@ async function migrateTables() {
       return {
         ...acc,
         ...{ [snakeCase(key)]: item[key] },
+        folder_path: "/"
       };
     }, {});
 
