@@ -6,6 +6,14 @@ const { migrateItem } = require('./migrateFields');
 const { omit } = require('lodash');
 const { singular } = pluralize;
 
+const snakeCaseObj = obj => {
+  const snake_case_obj = {};
+  Object.keys(obj).forEach(key => {
+    snake_case_obj[key] = snakeCase(obj[key]);
+  });
+  return snake_case_obj;
+};
+
 function addRelation(
   { uid, model, attribute, type, modelF = undefined, attributeF = undefined, isComponent = false },
   relations
@@ -41,7 +49,7 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
       relations
     );
   } else if (value.collection) {
-    if (value.column) {
+    if (value.dominant) {
       addRelation(
         {
           uid,
@@ -49,19 +57,19 @@ function processRelation({ key, value, collectionName, uid, isComponent }, relat
           attribute: key,
           type: 'manyToMany',
           modelF: value.collection,
-          attributeF: value.attribute,
+          attributeF: value.via,
           isComponent
         },
         relations
       );
-    } else {
+    } else if (!value.isVirtual) {
       addRelation(
         {
           uid,
           model: collectionName,
           attribute: key,
           type: 'oneToMany',
-          modelF: snakeCase(value.collection),
+          modelF: value.collection,
           attributeF: value.via,
           isComponent
         },
@@ -116,11 +124,15 @@ async function migrateOneToOneRelation(relation) {
   }
 }
 
+async function migrateOneToManyRelation(relation, sourceTable) {
+  await migrate(sourceTable, relation.table);
+}
+
 async function migrateManyToManyRelation(relation, sourceTable) {
   if (pluralize(relation.model, 1) === relation.modelF) {
     await migrate(sourceTable, relation.table, ({ id, ...item }) => ({
       [makeRelationModelId(relation.model)]: item[`${relation.modelF}_id`],
-      [`inv_${makeRelationModelId(relation.model)}`]: item[`${relation.attributeF}_id`],
+      [`inv_${makeRelationModelId(relation.model)}`]: item[`${singular(relation.attribute)}_id`],
     }));
   } else {
     const fromModelRelation = makeRelationModelId(relation.model);
@@ -176,17 +188,22 @@ async function migrateRelations(tables, relations) {
   for (const relation of relations) {
     if (relation.type === 'oneToOne') {
       await migrateOneToOneRelation(relation);
-    } else if (relation.type === 'manyToMany') {
+    } else {
+      const relation_snake = snakeCaseObj(relation);
       var sourceTable = v3RelationTables.find(
         (t) =>
-          t === `${relation.model}__${relation.attribute}` ||
-          t.startsWith(`${relation.model}_${relation.attribute}__${relation.modelF}`) ||
-          (t.startsWith(`${relation.modelF}`) &&
-            t.endsWith(`__${relation.model}_${relation.attribute}`))
+          t === `${relation_snake.model}__${relation_snake.attribute}` ||
+          t.startsWith(`${relation_snake.model}_${relation_snake.attribute}__${relation.modelF}`) ||
+          (t.startsWith(`${relation_snake.modelF}`) &&
+            t.endsWith(`__${relation_snake.model}_${relation_snake.attribute}`))
       );
 
       if (sourceTable) {
-        await migrateManyToManyRelation(relation, sourceTable);
+        if (relation.type === 'manyToMany') {
+          await migrateManyToManyRelation(relation, sourceTable);
+        } else if (relation.type === 'oneToMany') {
+          await migrateOneToManyRelation(relation, sourceTable);
+        }
       }
     }
   }
