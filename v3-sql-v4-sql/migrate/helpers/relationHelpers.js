@@ -180,6 +180,7 @@ async function migrateRelations(tables, relations) {
       var sourceTable = v3RelationTables.find(
         (t) =>
           t === `${relation.model}__${relation.attribute}` ||
+          t.startsWith(`${relation.model}_${relation.attribute}__${snakeCase(relation.modelF)}`) ||
           t.startsWith(`${relation.model}_${relation.attribute}__${relation.modelF}`) ||
           (t.startsWith(`${relation.modelF}`) &&
             t.endsWith(`__${relation.model}_${relation.attribute}`))
