@@ -319,7 +319,7 @@ async function run() {
                 let otherFk = `${singular(attribute.collection)}_id`;
 
                 if (otherFk === fk) {
-                  fk = `${singular(attribute.via)}_id`;
+                  otherFk = `${singular(targetAttribute.via)}_id`;
                 }
 
                 const rows = entry[key].map((id) => {
