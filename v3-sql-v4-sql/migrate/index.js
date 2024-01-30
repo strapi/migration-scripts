@@ -53,7 +53,11 @@ async function migrate() {
   }
 
   if (isMYSQL) {
-    tables = (await dbV3('information_schema.tables').select('table_name')).map((row) => {
+    tables = (
+      await dbV3('information_schema.tables')
+        .select('table_name')
+        .where('table_schema', process.env.DATABASE_V3_DATABASE)
+    ).map((row) => {
       return row.table_name || row.TABLE_NAME;
     });
   }
